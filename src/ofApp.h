@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxISF.h"
 
 class ofApp : public ofBaseApp {
 	
@@ -34,7 +33,6 @@ class ofApp : public ofBaseApp {
         int width;
         int height;
     
-    	ofxISF::Shader isf;
         ofFbo fbo;
 
 };

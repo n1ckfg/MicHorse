@@ -13,9 +13,6 @@ void ofApp :: setup() {
 	ofBackground(54, 54, 54, 255);
     fbo.end();
 
-    isf.setup(width, height, GL_RGB32F);
-    isf.load("isf-test.fs");
-    
 	//old OF default is 96 - but this results in fonts looking larger than in other programs.
 	ofTrueTypeFont :: setGlobalDpi(72);
 
@@ -48,8 +45,6 @@ void ofApp :: setup() {
 //--------------------------------------------------------------
 void ofApp :: update() {
     //ofImage img.grabScreen(0,0,width,height);
-    isf.setImage(fbo.getTextureReference(0));
-    isf.update();
 }
 
 //--------------------------------------------------------------
@@ -135,7 +130,7 @@ void ofApp :: draw() {
 		verdana14A.drawString(scaleA, -bounds.width/2, bounds.height/2 );
 	ofPopMatrix();	
     fbo.end();
-    isf.draw(0, 0);
+    fbo.draw(0,0);
 }
 
 
