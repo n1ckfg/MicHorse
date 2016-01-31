@@ -1,14 +1,15 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxISF.h"
 
-class ofApp : public ofBaseApp{
-
+class ofApp : public ofBaseApp {
+	
 	public:
 		void setup();
 		void update();
 		void draw();
-
+		
 		void keyPressed(int key);
 		void keyReleased(int key);
 		void mouseMoved(int x, int y );
@@ -17,6 +18,24 @@ class ofApp : public ofBaseApp{
 		void mouseReleased(int x, int y, int button);
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);
+		void gotMessage(ofMessage msg);		
 		
+		bool bFirst;
+		string typeStr;
+		
+		ofTrueTypeFont  franklinBook14;
+		ofTrueTypeFont	verdana14;
+		ofTrueTypeFont	verdana30;
+		
+		ofTrueTypeFont  franklinBook14A;
+		ofTrueTypeFont	verdana14A;
+    
+        // ~ ~ ~ ~ ~ ~ ~
+        int width;
+        int height;
+    
+    	ofxISF::Shader isf;
+        ofFbo fbo;
+
 };
+
