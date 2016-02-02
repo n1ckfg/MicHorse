@@ -1,5 +1,12 @@
 #include "ofApp.h"
 
+/*
+TODO:
+Scrolling
+Swapping entries
+Fix yellow last line
+*/
+
 //--------------------------------------------------------------
 void ofApp :: setup() {
     width = ofGetWidth();
