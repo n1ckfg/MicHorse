@@ -18,22 +18,45 @@ class ofApp : public ofBaseApp {
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);		
-		
-		bool bFirst;
-		string typeStr;
-		
-		ofTrueTypeFont  franklinBook14;
-		ofTrueTypeFont	verdana14;
-		ofTrueTypeFont	verdana30;
-		
-		ofTrueTypeFont  franklinBook14A;
-		ofTrueTypeFont	verdana14A;
+	
+        vector<string> editStr;
+        vector<string> playStr;
+    
+        // ~ ~ ~ edit ~ ~ ~
+		ofTrueTypeFont editFont;
+        int editFontSize;
+        float editLetterSpacing;
+        float editLineHeight;
+        int editLeftMargin;
+        int editTopMargin;
+    
+        ofColor editFontColor;
+        ofColor editFontHighlightColor;
+        ofColor editBgColor;
+
+        int editCounter;
+
+        // ~ ~ ~ play ~ ~ ~
+        ofTrueTypeFont playFont;
+        int playFontSize;
+        float playLetterSpacing;
+        float playLineHeight;
+        int playLeftMargin;
+        int playTopMargin;
+
+        ofColor playFontColor;
+        ofColor playBgColor;
+
+        int playCounter;
     
         // ~ ~ ~ ~ ~ ~ ~
         int width;
         int height;
     
         ofFbo fbo;
+    
+        bool editMode;
+    
 
 };
 
