@@ -1,8 +1,9 @@
 #pragma once
 
 #include "ofMain.h"
+#include "TerminalListener.h"
 
-class ofApp : public ofBaseApp {
+class ofApp : public ofBaseApp, public KeyListener {
 	
 	public:
 		void setup();
@@ -19,6 +20,9 @@ class ofApp : public ofBaseApp {
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);		
 	
+        TerminalListener consoleListener;
+        void onCharacterReceived(KeyListenerEventData& e);
+
         vector<string> editStr;
         vector<string> playStr;
     

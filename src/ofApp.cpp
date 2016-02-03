@@ -9,6 +9,10 @@ Fix yellow last line
 
 //--------------------------------------------------------------
 void ofApp :: setup() {
+    ofSetLogLevel(OF_LOG_VERBOSE);
+    ofSetLogLevel("ofThread", OF_LOG_ERROR);
+    consoleListener.setup(this);
+
     width = ofGetWidth();
     height = ofGetHeight();
     
@@ -101,6 +105,8 @@ void ofApp :: draw() {
 
 //--------------------------------------------------------------
 void ofApp :: keyPressed(int key) {
+    ofLog(OF_LOG_VERBOSE, "%c keyPressed", key);
+
     if (key == OF_KEY_TAB) {
         editMode = !editMode;
     }
@@ -187,4 +193,7 @@ void ofApp :: dragEvent(ofDragInfo dragInfo) {
 }
 
 //--------------------------------------------------------------
-
+void ofApp :: onCharacterReceived(KeyListenerEventData& e)
+{
+    keyPressed((int)e.character);
+}
