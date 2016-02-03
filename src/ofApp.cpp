@@ -18,6 +18,8 @@ void ofApp :: setup() {
     
     fbo.allocate(width, height, GL_RGBA);
     
+    shader.load("PostProcessing.frag", "PostProcessing.vert");
+
 	//old oF default is 96 - but this results in fonts looking larger than in other programs.
 	ofTrueTypeFont :: setGlobalDpi(72);
 
@@ -46,7 +48,7 @@ void ofApp :: setup() {
     playFontColor = ofColor(255,225,225);
     playBgColor = ofColor(0,127,0);
 
-     ofHideCursor();
+    ofHideCursor();
     
     editStr.push_back("");
     playStr.push_back("");
@@ -77,9 +79,16 @@ void ofApp :: draw() {
         ofSetColor(playFontColor);
         playFont.drawString(playStr[0], playLeftMargin, playTopMargin);
     }
-
+    
     fbo.end();
+
+    shader.begin();
+    shader.setUniformTexture("tex0", fbo.getTextureReference(), fbo.getTextureReference().texData.textureID);
+    shader.setUniform1f("time", ofGetElapsedTimef());
+    shader.setUniform2f("resolution", width, height);
+    
     fbo.draw(0,0);
+    shader.end();
 }
 
 

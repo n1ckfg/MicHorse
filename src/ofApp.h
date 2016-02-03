@@ -54,9 +54,9 @@ class ofApp : public ofBaseApp {
         int height;
     
         ofFbo fbo;
+        ofShader shader;
     
         bool editMode;
-    
-
+        
 };
 
