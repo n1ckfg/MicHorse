@@ -40,6 +40,7 @@ class ofApp : public ofBaseApp, public KeyListener {
         ofColor editFontColor;
         ofColor editFontHighlightColor;
         ofColor swapFontHighlightColor;
+        ofColor playFontHighlightColor;
         ofColor editBgColor;
 
         int editCounter;
@@ -52,6 +53,7 @@ class ofApp : public ofBaseApp, public KeyListener {
         float playLineHeight;
         int playLeftMargin;
         int playTopMargin;
+        void centerPlayText();
 
         ofColor playFontColor;
         ofColor playBgColor;

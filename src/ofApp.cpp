@@ -46,11 +46,12 @@ void ofApp :: setup() {
 	editFont.setLineHeight(editLineHeight);
 	editFont.setLetterSpacing(editLetterSpacing);
     editLeftMargin = 90;
-    editTopMargin = 230;
+    editTopMargin = 180;
     
     editFontColor = ofColor(225,225,225);
     editFontHighlightColor = ofColor(255,255,0);
     swapFontHighlightColor = ofColor(255,0,0);
+    playFontHighlightColor = ofColor(0,255,255);
     editBgColor = ofColor(127,0,0);
 
     playFontSize = 60;
@@ -60,7 +61,7 @@ void ofApp :: setup() {
     playFont.setLineHeight(playLineHeight);
     playFont.setLetterSpacing(playLetterSpacing);
     playLeftMargin = 100;
-    playTopMargin = 230;
+    playTopMargin = (height/2) + (playFontSize/2);
     
     playFontColor = ofColor(255,225,225);
     playBgColor = ofColor(0,127,0);
@@ -73,7 +74,7 @@ void ofApp :: setup() {
 
 //--------------------------------------------------------------
 void ofApp :: update() {
-    
+    //centerPlayText();
 }
 
 //--------------------------------------------------------------
@@ -100,7 +101,11 @@ void ofApp :: draw() {
                     ofSetColor(swapFontHighlightColor);
                 }
             } else {
-                ofSetColor(editFontColor);
+                if (i == playCounter) {
+                    ofSetColor(playFontHighlightColor);
+                } else {
+                    ofSetColor(editFontColor);
+                }
             }
             editFont.drawString(ofToString(i+1) + ". " + editStr[i], editLeftMargin, editTopMargin + (i * editLineHeight));
         }
@@ -129,6 +134,9 @@ void ofApp :: keyPressed(int key) {
             modeSelector = PLAY;
         } else if (modeSelector == PLAY) {
             modeSelector = EDIT;
+        } else if (modeSelector == SWAP) {
+            swapCounter = -1;
+            modeSelector = PLAY;
         }
     }
     
@@ -144,12 +152,23 @@ void ofApp :: keyPressed(int key) {
                 }
             } else if (modeSelector == SWAP) {
                 if (swapCounter != -1) {
-                    editStr.erase(editStr.begin() + swapCounter);
+                    if (editStr.size() > 1) {
+                        editStr.erase(editStr.begin() + swapCounter);
+                        if (editStr.size() > 1) {
+                            editCounter--;
+                        } else {
+                            editCounter = 0;
+                        }
+                
+                    } else if (editStr.size() == 1) {
+                        editStr[0] = "";
+                    }
                 }
                 swapCounter = -1;
                 modeSelector = EDIT;
+                if (editCounter <0) editCounter = 0;
             }
-        } else if (key == OF_KEY_RETURN ) {
+        } else if (key == OF_KEY_CONTROL) {
             /*
             if (editStr[editCounter].length() > 0) {
                 if (editCounter == editStr.size()-1) {
@@ -164,15 +183,22 @@ void ofApp :: keyPressed(int key) {
                 swapCounter = editCounter;
                 modeSelector = SWAP;
             } else if (modeSelector == SWAP) {
+                //if (editCounter != swapCounter) {
+                if (swapCounter < 0) {
+                    swapCounter = 0;
+                } else if (swapCounter > editStr.size()-1) {
+                    swapCounter = editStr.size()-1;
+                }
                 string swapLine = editStr[swapCounter];
                 editStr[swapCounter] = editStr[editCounter];
                 editStr[editCounter] = swapLine;
+                //}
                 swapCounter = -1;
                 modeSelector = EDIT;
             }
         } else if (key == OF_KEY_UP && editCounter > 0) {
             editCounter--;
-        } else if (key == OF_KEY_DOWN) {// && editCounter < editStr.size()-1) {
+        } else if (key == OF_KEY_DOWN || key == OF_KEY_RETURN) {// && editCounter < editStr.size()-1) {
             //editCounter++;
             if (editStr[editCounter].length() > 0) {
                 if (editCounter == editStr.size()-1) {
@@ -188,7 +214,12 @@ void ofApp :: keyPressed(int key) {
             //if (key == '0' || key == '1' || key == '2' || key == '3' || key == '4' || key == '5' || key == '6' || key == '7' || key == '8' || key == '9') {
                 //modeSelector = NUM_START;
             //} else {
-                editStr[editCounter].append(1, (char)key);
+            if (editCounter < 0) {
+                editCounter = 0;
+            } else if (editCounter > editStr.size()-1) {
+                editCounter = editStr.size()-1;
+            }
+            editStr[editCounter].append(1, (char)key);
             //}
         }
         
@@ -245,6 +276,12 @@ void ofApp :: dragEvent(ofDragInfo dragInfo) {
 
 }
 
+//--------------------------------------------------------------
+void ofApp :: centerPlayText() {
+    if (playStr.size() > 0 && playCounter <= playStr.size()-1) {
+        playLeftMargin = (width/2) - ((playStr[playCounter].length() * playFontSize)/2);
+    }
+}
 //--------------------------------------------------------------
 void ofApp :: onCharacterReceived(KeyListenerEventData& e)
 {
