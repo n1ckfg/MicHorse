@@ -9,11 +9,6 @@ Fix yellow last line
 
 //--------------------------------------------------------------
 void ofApp :: setup() {
-   
-    ofSetLogLevel(OF_LOG_VERBOSE);
-    ofSetLogLevel("ofThread", OF_LOG_ERROR);
-    consoleListener.setup(this);
-
     width = ofGetWidth();
     height = ofGetHeight();
     
@@ -22,19 +17,6 @@ void ofApp :: setup() {
     editCounter = 0;
     playCounter = 0;
     swapCounter = -1;
-    
-    fbo.allocate(width, height, GL_RGBA);
-    
-    #ifdef TARGET_OPENGLES
-        shader.load("shaders_gles/noise.vert","shaders_gles/noise.frag");
-    #else
-        if(ofGetGLProgrammableRenderer()){
-            shader.load("shaders_gl3/noise.vert", "shaders_gl3/noise.frag");
-        }else{
-            shader.load("shaders/noise.vert", "shaders/noise.frag");
-        }
-    #endif
-    doShader = false;
     
 	//old oF default is 96 - but this results in fonts looking larger than in other programs.
 	ofTrueTypeFont :: setGlobalDpi(72);
@@ -83,13 +65,6 @@ void ofApp :: draw() {
     //ofClear(255,255,255, 0);
     
     //ofBackground(0);
-    
-    if (doShader) {
-        shader.begin();
-        shader.setUniformTexture("tex0", fbo.getTextureReference(), fbo.getTextureReference().texData.textureID);
-        shader.setUniform1f("time", ofGetElapsedTimef());
-        shader.setUniform2f("resolution", width, height);
-    }
 
     if (modeSelector == EDIT || modeSelector == SWAP) {
         ofBackground(editBgColor);
@@ -115,19 +90,11 @@ void ofApp :: draw() {
         playFont.drawString(playStr[0], playLeftMargin, playTopMargin);
     }
     
-    if (doShader) {
-        shader.end();
-    }
-    
-    //fbo.end();
-
-    //fbo.draw(0,0);
 }
 
 
 //--------------------------------------------------------------
 void ofApp :: keyPressed(int key) {
-    ofLog(OF_LOG_VERBOSE, "%c keyPressed", key);
 
     if (key == OF_KEY_TAB) {
         if (modeSelector == EDIT) {
@@ -169,16 +136,6 @@ void ofApp :: keyPressed(int key) {
                 if (editCounter <0) editCounter = 0;
             }
         } else if (key == OF_KEY_CONTROL) {
-            /*
-            if (editStr[editCounter].length() > 0) {
-                if (editCounter == editStr.size()-1) {
-                    editStr.push_back("");
-                    editCounter = editStr.size()-1;
-                } else {
-                    editCounter++;
-                }
-            }
-            */
             if (modeSelector == EDIT) {
                 swapCounter = editCounter;
                 modeSelector = SWAP;
@@ -283,7 +240,3 @@ void ofApp :: centerPlayText() {
     }
 }
 //--------------------------------------------------------------
-void ofApp :: onCharacterReceived(KeyListenerEventData& e)
-{
-    keyPressed((int)e.character);
-}

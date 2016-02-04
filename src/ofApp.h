@@ -1,9 +1,8 @@
 #pragma once
 
 #include "ofMain.h"
-#include "TerminalListener.h"
 
-class ofApp : public ofBaseApp, public KeyListener {
+class ofApp : public ofBaseApp {
 	
 	public:
 		void setup();
@@ -18,10 +17,7 @@ class ofApp : public ofBaseApp, public KeyListener {
 		void mouseReleased(int x, int y, int button);
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);		
-	
-        TerminalListener consoleListener;
-        void onCharacterReceived(KeyListenerEventData& e);
+		void gotMessage(ofMessage msg);
 
         vector<string> editStr;
         vector<string> playStr;
@@ -63,10 +59,6 @@ class ofApp : public ofBaseApp, public KeyListener {
         // ~ ~ ~ ~ ~ ~ ~
         int width;
         int height;
-    
-        ofFbo fbo;
-        ofShader shader;
-        bool doShader;
     
 };
 
