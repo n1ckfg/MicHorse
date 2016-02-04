@@ -26,7 +26,10 @@ class ofApp : public ofBaseApp, public KeyListener {
         vector<string> editStr;
         vector<string> playStr;
     
-        // ~ ~ ~ edit ~ ~ ~
+        enum ModeSelector { EDIT, PLAY, SWAP };
+        ModeSelector modeSelector;
+    
+        // ~ ~ ~ edit / swap ~ ~ ~
 		ofTrueTypeFont editFont;
         int editFontSize;
         float editLetterSpacing;
@@ -36,9 +39,11 @@ class ofApp : public ofBaseApp, public KeyListener {
     
         ofColor editFontColor;
         ofColor editFontHighlightColor;
+        ofColor swapFontHighlightColor;
         ofColor editBgColor;
 
         int editCounter;
+        int swapCounter;
 
         // ~ ~ ~ play ~ ~ ~
         ofTrueTypeFont playFont;
@@ -59,8 +64,7 @@ class ofApp : public ofBaseApp, public KeyListener {
     
         ofFbo fbo;
         ofShader shader;
+        bool doShader;
     
-        bool editMode;
-        
 };
 

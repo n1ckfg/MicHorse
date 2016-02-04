@@ -9,6 +9,7 @@ Fix yellow last line
 
 //--------------------------------------------------------------
 void ofApp :: setup() {
+   
     ofSetLogLevel(OF_LOG_VERBOSE);
     ofSetLogLevel("ofThread", OF_LOG_ERROR);
     consoleListener.setup(this);
@@ -16,9 +17,11 @@ void ofApp :: setup() {
     width = ofGetWidth();
     height = ofGetHeight();
     
-    editMode = true;
+    modeSelector = EDIT;
+    
     editCounter = 0;
     playCounter = 0;
+    swapCounter = -1;
     
     fbo.allocate(width, height, GL_RGBA);
     
@@ -31,6 +34,7 @@ void ofApp :: setup() {
             shader.load("shaders/noise.vert", "shaders/noise.frag");
         }
     #endif
+    doShader = false;
     
 	//old oF default is 96 - but this results in fonts looking larger than in other programs.
 	ofTrueTypeFont :: setGlobalDpi(72);
@@ -46,6 +50,7 @@ void ofApp :: setup() {
     
     editFontColor = ofColor(225,225,225);
     editFontHighlightColor = ofColor(255,255,0);
+    swapFontHighlightColor = ofColor(255,0,0);
     editBgColor = ofColor(127,0,0);
 
     playFontSize = 60;
@@ -68,38 +73,50 @@ void ofApp :: setup() {
 
 //--------------------------------------------------------------
 void ofApp :: update() {
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp :: draw() {
-    fbo.begin();
-    shader.begin();
-    shader.setUniformTexture("tex0", fbo.getTextureReference(), fbo.getTextureReference().texData.textureID);
-    shader.setUniform1f("time", ofGetElapsedTimef());
-    shader.setUniform2f("resolution", width, height);
+    //fbo.begin();
+    //ofClear(255,255,255, 0);
+    
+    //ofBackground(0);
+    
+    if (doShader) {
+        shader.begin();
+        shader.setUniformTexture("tex0", fbo.getTextureReference(), fbo.getTextureReference().texData.textureID);
+        shader.setUniform1f("time", ofGetElapsedTimef());
+        shader.setUniform2f("resolution", width, height);
+    }
 
-    ofClear(255,255,255, 255);
-
-    if (editMode) {
+    if (modeSelector == EDIT || modeSelector == SWAP) {
         ofBackground(editBgColor);
         for (int i=0; i<editStr.size(); i++) {
-            if (i == editCounter) {
-                ofSetColor(editFontHighlightColor);
+            if (i == editCounter || i == swapCounter) {
+                if (i == editCounter && (modeSelector != SWAP || i != swapCounter)) {
+                    ofSetColor(editFontHighlightColor);
+                } else if (modeSelector == SWAP && i == swapCounter && swapCounter != -1) {
+                    ofSetColor(swapFontHighlightColor);
+                }
             } else {
                 ofSetColor(editFontColor);
             }
             editFont.drawString(ofToString(i+1) + ". " + editStr[i], editLeftMargin, editTopMargin + (i * editLineHeight));
         }
-    } else {
+    } else if (modeSelector == PLAY) {
         ofBackground(playBgColor);
         ofSetColor(playFontColor);
         playFont.drawString(playStr[0], playLeftMargin, playTopMargin);
     }
-    shader.end();
-    fbo.end();
+    
+    if (doShader) {
+        shader.end();
+    }
+    
+    //fbo.end();
 
-    fbo.draw(0,0);
+    //fbo.draw(0,0);
 }
 
 
@@ -108,20 +125,32 @@ void ofApp :: keyPressed(int key) {
     ofLog(OF_LOG_VERBOSE, "%c keyPressed", key);
 
     if (key == OF_KEY_TAB) {
-        editMode = !editMode;
+        if (modeSelector == EDIT) {
+            modeSelector = PLAY;
+        } else if (modeSelector == PLAY) {
+            modeSelector = EDIT;
+        }
     }
     
-    if (editMode) {
-        
+    if (modeSelector == EDIT || modeSelector == SWAP) {
         if (key == OF_KEY_DEL || key == OF_KEY_BACKSPACE) {
-            if (editStr[editCounter].length() > 0) {
-                editStr[editCounter] = editStr[editCounter].substr(0, editStr[editCounter].length()-1);
-            } else if (editCounter != 0) {
-                editStr.erase(editStr.begin() + editCounter);
-                editCounter--;
-                if (editCounter < 0) editCounter = 0;
+            if (modeSelector == EDIT) {
+                if (editStr[editCounter].length() > 0) {
+                    editStr[editCounter] = editStr[editCounter].substr(0, editStr[editCounter].length()-1);
+                } else if (editCounter != 0) {
+                    //editStr.erase(editStr.begin() + editCounter);
+                    //editCounter--;
+                    //if (editCounter < 0) editCounter = 0;
+                }
+            } else if (modeSelector == SWAP) {
+                if (swapCounter != -1) {
+                    editStr.erase(editStr.begin() + swapCounter);
+                }
+                swapCounter = -1;
+                modeSelector = EDIT;
             }
         } else if (key == OF_KEY_RETURN ) {
+            /*
             if (editStr[editCounter].length() > 0) {
                 if (editCounter == editStr.size()-1) {
                     editStr.push_back("");
@@ -130,20 +159,44 @@ void ofApp :: keyPressed(int key) {
                     editCounter++;
                 }
             }
-            // TODO sorting here
+            */
+            if (modeSelector == EDIT) {
+                swapCounter = editCounter;
+                modeSelector = SWAP;
+            } else if (modeSelector == SWAP) {
+                string swapLine = editStr[swapCounter];
+                editStr[swapCounter] = editStr[editCounter];
+                editStr[editCounter] = swapLine;
+                swapCounter = -1;
+                modeSelector = EDIT;
+            }
         } else if (key == OF_KEY_UP && editCounter > 0) {
             editCounter--;
-        } else if (key == OF_KEY_DOWN && editCounter < editStr.size()-1) {
-            editCounter++;
-        } else if (key != OF_KEY_UP && key != OF_KEY_DOWN && key != OF_KEY_LEFT && key != OF_KEY_RIGHT){
-            editStr[editCounter].append(1, (char)key);
+        } else if (key == OF_KEY_DOWN) {// && editCounter < editStr.size()-1) {
+            //editCounter++;
+            if (editStr[editCounter].length() > 0) {
+                if (editCounter == editStr.size()-1) {
+                    editStr.push_back("");
+                    editCounter = editStr.size()-1;
+                } else {
+                    editCounter++;
+                }
+            } else if (editCounter < editStr.size()-1) {
+                editCounter++;
+            }
+        } else if (key != OF_KEY_UP && key != OF_KEY_DOWN && key != OF_KEY_LEFT && key != OF_KEY_RIGHT) {
+            //if (key == '0' || key == '1' || key == '2' || key == '3' || key == '4' || key == '5' || key == '6' || key == '7' || key == '8' || key == '9') {
+                //modeSelector = NUM_START;
+            //} else {
+                editStr[editCounter].append(1, (char)key);
+            //}
         }
         
-    } else {
+    } else if (modeSelector == PLAY) {
         if (key == ' ') {
             playCounter++;
             if (playCounter > editStr.size()-1 || (editStr[playCounter].length() < 1 && playCounter == editStr.size()-1)) playCounter = 0;
-        } else if (key == 'z' || key == 'Z') {
+        } else if (key == 'z' || key == 'Z' || key == OF_KEY_BACKSPACE || key == OF_KEY_DEL) {
             playCounter--;
             if (playCounter < 0) playCounter = editStr.size()-1;
          }
