@@ -262,7 +262,7 @@ int ofApp :: KeyTab() {
     if (keyboardType == OSX) {
         return OF_KEY_TAB;
     } else if (keyboardType == RPI) {
-        return 9;
+        return OF_KEY_TAB;
     }
 }
 
@@ -270,7 +270,7 @@ int ofApp :: KeyDelete() {
     if (keyboardType == OSX) {
         return OF_KEY_DEL;
     } else if (keyboardType == RPI) {
-        return 127;
+        return OF_KEY_DEL;
     }
 }
 
@@ -278,7 +278,7 @@ int ofApp :: KeyBackspace() {
     if (keyboardType == OSX) {
         return OF_KEY_BACKSPACE;
     } else if (keyboardType == RPI) {
-        return 127;
+        return OF_KEY_BACKSPACE;
     }
 }
 
@@ -286,7 +286,7 @@ int ofApp :: KeyControl() {
     if (keyboardType == OSX) {
         return OF_KEY_CONTROL;
     } else if (keyboardType == RPI) {
-        return 4096;
+        return OF_KEY_CONTROL;
     }
 }
 
@@ -294,7 +294,7 @@ int ofApp :: KeyUpArrow() {
     if (keyboardType == OSX) {
         return OF_KEY_UP;
     } else if (keyboardType == RPI) {
-        return 30;
+        return OF_KEY_UP;
     }
 }
 
@@ -302,7 +302,7 @@ int ofApp :: KeyDownArrow() {
     if (keyboardType == OSX) {
         return OF_KEY_DOWN;
     } else if (keyboardType == RPI) {
-        return 125;
+        return OF_KEY_DOWN;
     }
 }
 
@@ -310,7 +310,7 @@ int ofApp :: KeyLeftArrow() {
     if (keyboardType == OSX) {
         return OF_KEY_LEFT;
     } else if (keyboardType == RPI) {
-        return 28;
+        return OF_KEY_LEFT;
     }
 }
 
@@ -318,7 +318,7 @@ int ofApp :: KeyRightArrow() {
     if (keyboardType == OSX) {
         return OF_KEY_RIGHT;
     } else if (keyboardType == RPI) {
-        return 29;
+        return OF_KEY_RIGHT;
     }
 }
 
@@ -326,7 +326,7 @@ int ofApp :: KeyReturn() {
     if (keyboardType == OSX) {
         return OF_KEY_RETURN;
     } else if (keyboardType == RPI) {
-        return 3; //13;
+        return OF_KEY_RETURN;
     }
 }
 
@@ -334,7 +334,7 @@ int ofApp :: KeyEnter() {
     if (keyboardType == OSX) {
         return OF_KEY_RETURN;
     } else if (keyboardType == RPI) {
-        return 3;
+        return OF_KEY_RETURN;
     }
 }
 
