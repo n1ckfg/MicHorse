@@ -49,8 +49,14 @@ class ofApp : public ofBaseApp {
         int swapCounter;
 
         // ~ ~ ~ play ~ ~ ~
+        vector<string> playFontsList;
         vector<ofTrueTypeFont> playFonts;
+        void initFonts();
+    
+        vector<string> playImagesList;
         vector<ofImage> playImages;
+        void initImages();
+    
         int playFontSelector;
         int playImageSelector;
     
@@ -60,10 +66,13 @@ class ofApp : public ofBaseApp {
         int playLeftMargin;
         int playTopMargin;
         void centerPlayText();
-
+        int playFontSizeChangeIncrement;
+    
         ofColor playFontColor;
         ofColor playBgColor;
 
+        ofColor introBgColor;
+    
         int playCounter;
     
         // ~ ~ ~ ~ ~ ~ ~

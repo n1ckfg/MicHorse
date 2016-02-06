@@ -52,28 +52,30 @@ void ofApp :: setup() {
     playFontHighlightColor = ofColor(0,255,255);
     editBgColor = ofColor(127,0,0);
 
-    playFontSize = 60;
+    introBgColor = ofColor(60,60,120);
+    
+    playFontSize = 72;
     playLineHeight = 68.0f;
     playLetterSpacing = 1.035;
     playFontSelector = 0;
+    playFontSizeChangeIncrement = 4;
+
+    playFontsList.push_back("fonts/vcr_osd_mono.ttf");
+    playFontsList.push_back("fonts/arcade.ttf");
+    playFontsList.push_back("fonts/arcade_classic.ttf");
+    playFontsList.push_back("fonts/stitch_warrior.ttf");
     
-    ofTrueTypeFont font;
-    font.loadFont("fonts/vcr_osd_mono.ttf", playFontSize, true, true);
-    playFonts.push_back(font);
-
-    font.loadFont("fonts/arcade.ttf", playFontSize, true, true);
-    playFonts.push_back(font);
-
-    font.loadFont("fonts/arcade_classic.ttf", playFontSize, true, true);
-    playFonts.push_back(font);
-
-    font.loadFont("fonts/stitch_warrior.ttf", playFontSize, true, true);
-    playFonts.push_back(font);
+    initFonts();
     
-    for (int i=0; i<playFonts.size(); i++) {
-        playFonts[i].setLineHeight(playLineHeight);
-        playFonts[i].setLetterSpacing(playLetterSpacing);
-    }
+    playImagesList.push_back("textures/bowie.png");
+    playImagesList.push_back("textures/duckhunt.png");
+    playImagesList.push_back("textures/gnr.png");
+    playImagesList.push_back("textures/pacman.png");
+    playImagesList.push_back("textures/rambo.png");
+    playImagesList.push_back("textures/aliens.jpg");
+    playImagesList.push_back("textures/starfox.png");
+
+    initImages();
     
     playLeftMargin = 90;
     playTopMargin = (height/2) + (playFontSize/2);
@@ -100,14 +102,11 @@ void ofApp :: setup() {
     introStr.push_back("SPACE:  next singer");
     introStr.push_back("Z:  previous singer");
     introStr.push_back("F:  change font");
+    introStr.push_back("Plus, Minus:  change font size");
     introStr.push_back("B:  change background");
     
     playImageSelector = 0;
-    ofImage image;
-    image.loadImage("textures/aliens.jpg");
-    playImages.push_back(image);
-    image.loadImage("textures/starfox.png");
-    playImages.push_back(image);
+    
 }
 
 //--------------------------------------------------------------
@@ -123,7 +122,7 @@ void ofApp :: draw() {
         ofClear(255,255,255, 0);
     
         if (modeSelector == INTRO) {
-            ofBackground(editBgColor);
+            ofBackground(introBgColor);
             ofSetColor(editFontColor);
 
             for (int i=0; i<introStr.size(); i++) {
@@ -230,7 +229,7 @@ void ofApp :: keyPressed(int key) {
                 modeSelector = EDIT;
                 if (editCounter <0) editCounter = 0;
             }
-        } else if (key == '/') { //KeyControl()) {
+        } else if (key == '/' || key == '?') { //KeyControl()) {
             if (modeSelector == EDIT) {
                 swapCounter = editCounter;
                 modeSelector = SWAP;
@@ -288,6 +287,15 @@ void ofApp :: keyPressed(int key) {
         } else if (key == 'b' || key == 'B') {
             playImageSelector ++;
             if (playImageSelector > playImages.size()-1) playImageSelector = 0;
+        } else if (key == '-' || key == '_' || key == '+' || key == '=') {
+            if (key == '-' || key == '_') {
+                playFontSize -= playFontSizeChangeIncrement;
+                if (playFontSize < 10) playFontSize = 10;
+            } else if (key == '+' || key == '=') {
+                playFontSize += playFontSizeChangeIncrement;
+            }
+            
+            initFonts();
         }
         
         if (editStr[playCounter].length() > 0) playStr[0] = editStr[playCounter];//ofSplitString(editStr[editCounter], "-");
@@ -383,9 +391,29 @@ void ofApp :: saveKeystoneVertsOrig() {
     }
 }
 
+//--------------------------------------------------------------
 void ofApp :: loadKeystoneVertsOrig() {
     for (int i=0; i<keystoneVertsOrig.size(); i++) {
         plane.getMesh().setVertex(i, keystoneVertsOrig[i]);
+    }
+}
+
+void ofApp :: initFonts() {
+    playFonts.clear();
+    for (int i=0; i<playFontsList.size(); i++) {
+        ofTrueTypeFont font;
+        font.loadFont(playFontsList[i], playFontSize, true, true);
+        playFonts.push_back(font);
+        playFonts[i].setLineHeight(playLineHeight);
+        playFonts[i].setLetterSpacing(playLetterSpacing);
+    }
+}
+
+void ofApp :: initImages() {
+    for (int i=0; i<playImagesList.size(); i++) {
+        ofImage image;
+        image.loadImage(playImagesList[i]);
+        playImages.push_back(image);
     }
 }
 
