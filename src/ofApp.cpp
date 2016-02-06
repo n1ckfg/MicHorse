@@ -140,7 +140,7 @@ void ofApp :: keyPressed(int key) {
     }
     
     if (modeSelector == EDIT || modeSelector == SWAP) {
-        if (ofm.KeyDelete(key)) {
+        if (key == OF_KEY_DEL || key == OF_KEY_BACKSPACE) {
             if (modeSelector == EDIT) {
                 if (editStr[editCounter].length() > 0) {
                     editStr[editCounter] = editStr[editCounter].substr(0, editStr[editCounter].length()-1);
@@ -187,7 +187,7 @@ void ofApp :: keyPressed(int key) {
             }
         } else if (key == OF_KEY_UP && editCounter > 0) {
             editCounter--;
-        } else if (key == OF_KEY_DOWN || ofm.KeyReturn(key)) {
+        } else if (key == OF_KEY_DOWN || key == OF_KEY_RETURN) {
             //editCounter++;
             if (editStr[editCounter].length() > 0) {
                 if (editCounter == editStr.size()-1) {
