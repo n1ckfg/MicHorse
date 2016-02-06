@@ -26,8 +26,9 @@ class ofApp : public ofBaseApp {
 
         vector<string> editStr;
         vector<string> playStr;
+        vector<string> introStr;
     
-        enum ModeSelector { EDIT, PLAY, SWAP, KEYSTONE };
+        enum ModeSelector { EDIT, PLAY, SWAP, KEYSTONE, INTRO };
         ModeSelector modeSelector;
     
         // ~ ~ ~ edit / swap ~ ~ ~

@@ -28,7 +28,7 @@ void ofApp :: setup() {
     keystoneHandleSize = 50;
     keystoneHandleStroke = 10;
     
-    modeSelector = EDIT;
+    modeSelector = INTRO;
     
     editCounter = 0;
     playCounter = 0;
@@ -84,6 +84,24 @@ void ofApp :: setup() {
     editStr.push_back("");
     playStr.push_back("");
     
+    introStr.push_back("- ~ - EDIT - ~ -");
+    introStr.push_back("");
+    introStr.push_back("TAB:  go to Play mode");
+    introStr.push_back("Letters:  you know what to do");
+    introStr.push_back("Down arrow:  new singer");
+    introStr.push_back("Question mark:  select two singers to swap");
+    introStr.push_back("1, 2, 3, 4:  select keystone corner");
+    introStr.push_back("5:  reset keystoning");
+    introStr.push_back("");
+    introStr.push_back("");
+    introStr.push_back("~ - ~ PLAY ~ - ~");
+    introStr.push_back("");
+    introStr.push_back("TAB:  go to Edit mode");
+    introStr.push_back("SPACE:  next singer");
+    introStr.push_back("Z:  previous singer");
+    introStr.push_back("F:  change font");
+    introStr.push_back("B:  change background");
+    
     playImageSelector = 0;
     ofImage image;
     image.loadImage("textures/aliens.jpg");
@@ -103,8 +121,16 @@ void ofApp :: draw() {
     
     fbo.begin();
         ofClear(255,255,255, 0);
-        
-        if (modeSelector == EDIT || modeSelector == SWAP) {
+    
+        if (modeSelector == INTRO) {
+            ofBackground(editBgColor);
+            ofSetColor(editFontColor);
+
+            for (int i=0; i<introStr.size(); i++) {
+                editFont.drawString(introStr[i], editLeftMargin, editTopMargin + (i * editLineHeight));
+            }
+            
+        } else if (modeSelector == EDIT || modeSelector == SWAP) {
             ofBackground(editBgColor);
             for (int i=0; i<editStr.size(); i++) {
                 if (i == editCounter || i == swapCounter) {
@@ -122,6 +148,7 @@ void ofApp :: draw() {
                 }
                 editFont.drawString(ofToString(i+1) + ". " + editStr[i], editLeftMargin, editTopMargin + (i * editLineHeight));
             }
+            
         } else if (modeSelector == PLAY) {
             if (playImages.size() > 0) {
                 playImages[playImageSelector].draw(0,0,width,height);
@@ -132,6 +159,7 @@ void ofApp :: draw() {
             }
             ofSetColor(playFontColor);
             playFonts[playFontSelector].drawString(playStr[0], playLeftMargin, playTopMargin);
+            
         } else if (modeSelector == KEYSTONE) {
             ofSetColor(255);
             checkerboard.draw(0,0,width,height);
@@ -158,18 +186,23 @@ void ofApp :: draw() {
 
 //--------------------------------------------------------------
 void ofApp :: keyPressed(int key) {
-    if (key == OF_KEY_TAB) {
-        if (modeSelector == EDIT) {
-            modeSelector = PLAY;
-        } else if (modeSelector == PLAY) {
-            modeSelector = EDIT;
-        } else if (modeSelector == SWAP) {
-            swapCounter = -1;
-            modeSelector = PLAY;
+    if (modeSelector == EDIT || modeSelector == PLAY) {
+        if (key == OF_KEY_TAB) {
+            if (modeSelector == EDIT) {
+                modeSelector = PLAY;
+            } else if (modeSelector == PLAY) {
+                modeSelector = EDIT;
+            } else if (modeSelector == SWAP) {
+                swapCounter = -1;
+                modeSelector = PLAY;
+            }
         }
+        
     }
-    
-    if (modeSelector == EDIT || modeSelector == SWAP) {
+
+    if (modeSelector == INTRO) {
+        modeSelector = EDIT;
+    } else if (modeSelector == EDIT || modeSelector == SWAP) {
         if (key == OF_KEY_DEL || key == OF_KEY_BACKSPACE) {
             if (modeSelector == EDIT) {
                 if (editStr[editCounter].length() > 0) {
