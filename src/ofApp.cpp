@@ -12,7 +12,10 @@ void ofApp :: setup() {
     width = ofGetWidth();
     height = ofGetHeight();
     
+    checkerboard.loadImage("checkerboard.png");
+    
     modeSelector = EDIT;
+    keyboardType = RPI;
     
     editCounter = 0;
     playCounter = 0;
@@ -61,11 +64,8 @@ void ofApp :: update() {
 
 //--------------------------------------------------------------
 void ofApp :: draw() {
-    //fbo.begin();
-    //ofClear(255,255,255, 0);
+    ofClear(255,255,255, 0);
     
-    //ofBackground(0);
-
     if (modeSelector == EDIT || modeSelector == SWAP) {
         ofBackground(editBgColor);
         for (int i=0; i<editStr.size(); i++) {
@@ -88,6 +88,9 @@ void ofApp :: draw() {
         ofBackground(playBgColor);
         ofSetColor(playFontColor);
         playFont.drawString(playStr[0], playLeftMargin, playTopMargin);
+    } else if (modeSelector == KEYSTONE) {
+        ofSetColor(255);
+        checkerboard.draw(0,0,width,height);
     }
     
 }
@@ -96,7 +99,7 @@ void ofApp :: draw() {
 //--------------------------------------------------------------
 void ofApp :: keyPressed(int key) {
 
-    if (key == OF_KEY_TAB) {
+    if (key == KeyTab()) {
         if (modeSelector == EDIT) {
             modeSelector = PLAY;
         } else if (modeSelector == PLAY) {
@@ -108,7 +111,7 @@ void ofApp :: keyPressed(int key) {
     }
     
     if (modeSelector == EDIT || modeSelector == SWAP) {
-        if (key == OF_KEY_DEL || key == OF_KEY_BACKSPACE) {
+        if (key == KeyDelete() || key == KeyBackspace()) {
             if (modeSelector == EDIT) {
                 if (editStr[editCounter].length() > 0) {
                     editStr[editCounter] = editStr[editCounter].substr(0, editStr[editCounter].length()-1);
@@ -135,7 +138,7 @@ void ofApp :: keyPressed(int key) {
                 modeSelector = EDIT;
                 if (editCounter <0) editCounter = 0;
             }
-        } else if (key == OF_KEY_CONTROL) {
+        } else if (key == KeyControl()) {
             if (modeSelector == EDIT) {
                 swapCounter = editCounter;
                 modeSelector = SWAP;
@@ -153,9 +156,9 @@ void ofApp :: keyPressed(int key) {
                 swapCounter = -1;
                 modeSelector = EDIT;
             }
-        } else if (key == OF_KEY_UP && editCounter > 0) {
+        } else if (key == KeyUpArrow() && editCounter > 0) {
             editCounter--;
-        } else if (key == OF_KEY_DOWN || key == OF_KEY_RETURN) {// && editCounter < editStr.size()-1) {
+        } else if (key == KeyDownArrow() || key == KeyReturn()) {// && editCounter < editStr.size()-1) {
             //editCounter++;
             if (editStr[editCounter].length() > 0) {
                 if (editCounter == editStr.size()-1) {
@@ -167,29 +170,44 @@ void ofApp :: keyPressed(int key) {
             } else if (editCounter < editStr.size()-1) {
                 editCounter++;
             }
-        } else if (key != OF_KEY_UP && key != OF_KEY_DOWN && key != OF_KEY_LEFT && key != OF_KEY_RIGHT) {
+        } else if (key != KeyUpArrow() && key != KeyDownArrow() && key != KeyLeftArrow() && key != KeyRightArrow()) {
             //if (key == '0' || key == '1' || key == '2' || key == '3' || key == '4' || key == '5' || key == '6' || key == '7' || key == '8' || key == '9') {
-                //modeSelector = NUM_START;
-            //} else {
-            if (editCounter < 0) {
-                editCounter = 0;
-            } else if (editCounter > editStr.size()-1) {
-                editCounter = editStr.size()-1;
+            if (key == '0' || key == '1' || key == '2' || key == '3' || key == '4' || key == '5') {
+                modeSelector = KEYSTONE;
+            } else {            
+                if (editCounter < 0) {
+                    editCounter = 0;
+                } else if (editCounter > editStr.size()-1) {
+                    editCounter = editStr.size()-1;
+                }
+                editStr[editCounter].append(1, (char)key);
             }
-            editStr[editCounter].append(1, (char)key);
-            //}
         }
         
     } else if (modeSelector == PLAY) {
         if (key == ' ') {
             playCounter++;
             if (playCounter > editStr.size()-1 || (editStr[playCounter].length() < 1 && playCounter == editStr.size()-1)) playCounter = 0;
-        } else if (key == 'z' || key == 'Z' || key == OF_KEY_BACKSPACE || key == OF_KEY_DEL) {
+        } else if (key == 'z' || key == 'Z' || key == KeyBackspace() || key == KeyDelete()) {
             playCounter--;
             if (playCounter < 0) playCounter = editStr.size()-1;
          }
         if (editStr[playCounter].length() > 0) playStr[0] = editStr[playCounter];//ofSplitString(editStr[editCounter], "-");
         
+    } else if (modeSelector == KEYSTONE) {
+        if (key == '1') {
+         
+        } else if (key == '2') {
+        
+        } else if (key == '3') {
+        
+        } else if (key == '4') {
+
+        } else if (key == '5') {
+        
+        } else {
+            modeSelector = EDIT;
+        }
     }
 }
 
@@ -240,3 +258,84 @@ void ofApp :: centerPlayText() {
     }
 }
 //--------------------------------------------------------------
+int ofApp :: KeyTab() {
+    if (keyboardType == OSX) {
+        return OF_KEY_TAB;
+    } else if (keyboardType == RPI) {
+        return 9;
+    }
+}
+
+int ofApp :: KeyDelete() {
+    if (keyboardType == OSX) {
+        return OF_KEY_DEL;
+    } else if (keyboardType == RPI) {
+        return 127;
+    }
+}
+
+int ofApp :: KeyBackspace() {
+    if (keyboardType == OSX) {
+        return OF_KEY_BACKSPACE;
+    } else if (keyboardType == RPI) {
+        return 127;
+    }
+}
+
+int ofApp :: KeyControl() {
+    if (keyboardType == OSX) {
+        return OF_KEY_CONTROL;
+    } else if (keyboardType == RPI) {
+        return 17;
+    }
+}
+
+int ofApp :: KeyUpArrow() {
+    if (keyboardType == OSX) {
+        return OF_KEY_UP;
+    } else if (keyboardType == RPI) {
+        return 30;
+    }
+}
+
+int ofApp :: KeyDownArrow() {
+    if (keyboardType == OSX) {
+        return OF_KEY_DOWN;
+    } else if (keyboardType == RPI) {
+        return 31;
+    }
+}
+
+int ofApp :: KeyLeftArrow() {
+    if (keyboardType == OSX) {
+        return OF_KEY_LEFT;
+    } else if (keyboardType == RPI) {
+        return 28;
+    }
+}
+
+int ofApp :: KeyRightArrow() {
+    if (keyboardType == OSX) {
+        return OF_KEY_RIGHT;
+    } else if (keyboardType == RPI) {
+        return 29;
+    }
+}
+
+int ofApp :: KeyReturn() {
+    if (keyboardType == OSX) {
+        return OF_KEY_RETURN;
+    } else if (keyboardType == RPI) {
+        return 13;
+    }
+}
+
+int ofApp :: KeyEnter() {
+    if (keyboardType == OSX) {
+        return 3;
+    } else if (keyboardType == RPI) {
+        return 3;
+    }
+}
+
+

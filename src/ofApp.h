@@ -22,7 +22,7 @@ class ofApp : public ofBaseApp {
         vector<string> editStr;
         vector<string> playStr;
     
-        enum ModeSelector { EDIT, PLAY, SWAP };
+        enum ModeSelector { EDIT, PLAY, SWAP, KEYSTONE };
         ModeSelector modeSelector;
     
         // ~ ~ ~ edit / swap ~ ~ ~
@@ -59,6 +59,23 @@ class ofApp : public ofBaseApp {
         // ~ ~ ~ ~ ~ ~ ~
         int width;
         int height;
+    
+        ofImage checkerboard;
+    
+        enum KeyboardType { OSX, RPI };
+        KeyboardType keyboardType;
+        int KeyTab();
+        int KeyDelete();
+        int KeyBackspace();
+        int KeyControl();
+        int KeyUpArrow();
+        int KeyDownArrow();
+        int KeyLeftArrow();
+        int KeyRightArrow();
+        int KeyReturn();
+        int KeyEnter();
+
+
     
 };
 
