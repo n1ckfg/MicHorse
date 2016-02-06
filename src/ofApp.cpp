@@ -16,7 +16,7 @@ void ofApp :: setup() {
     fbo.allocate(width, height, GL_RGBA);
     shaderName = "shaders/LED_GLES";
     shaderTexName = "tex0";
-    shader.load(shaderName + ".frag", shaderName + ".vert");
+    //shader.load(shaderName + ".frag", shaderName + ".vert");
     
     plane.set(width, height);   // dimensions for width and height in pixels
     plane.setPosition(width/2, height/2, 0); // position in x y z

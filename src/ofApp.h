@@ -65,7 +65,7 @@ class ofApp : public ofBaseApp {
   
         ofImage checkerboard;
         ofFbo fbo;
-        ofShader shader;
+        //ofShader shader;
         string shaderName;
         string shaderTexName;
     
