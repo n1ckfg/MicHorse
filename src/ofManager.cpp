@@ -21,16 +21,6 @@ void ofManager :: setup(int& width, int& height) {
 
 //--------------------------------------------------------------
 
-bool ofManager :: KeyTab(int key) {
-    if (keyboardType == OSX && key == OF_KEY_TAB) {
-        return true;
-    } else if (keyboardType == RPI && key == 15) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
 bool ofManager :: KeyDelete(int key) {
     if (keyboardType == OSX) {
         if (key == OF_KEY_DEL) {
@@ -61,49 +51,11 @@ bool ofManager :: KeyControl(int key) {
     }
 }
 
-bool ofManager :: KeyUpArrow(int key) {
-    if (keyboardType == OSX && key == OF_KEY_UP) {
-        return true;
-    } else if (keyboardType == RPI && key == 103) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-bool ofManager :: KeyDownArrow(int key) {
-    if (keyboardType == OSX && key == OF_KEY_DOWN ) {
-        return true;
-    } else if (keyboardType == RPI && key == 108) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-bool ofManager :: KeyLeftArrow(int key) {
-    if (keyboardType == OSX && key == OF_KEY_LEFT) {
-        return true;
-    } else if (keyboardType == RPI && key == 105) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-bool ofManager :: KeyRightArrow(int key) {
-    if (keyboardType == OSX && key == OF_KEY_RIGHT) {
-        return true;
-    } else if (keyboardType == RPI && key == 106) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
 bool ofManager :: KeyReturn(int key) {
-    if (keyboardType == OSX && key == OF_KEY_RETURN) {
-        return true;
+    if (keyboardType == OSX) {
+        if (key == OF_KEY_RETURN) {
+            return true;
+        }
     } else if (keyboardType == RPI && (key == 28 || key == 96)) {
         return true;
     } else {
@@ -112,7 +64,7 @@ bool ofManager :: KeyReturn(int key) {
 }
 
 bool ofManager :: KeyIsArrow(int key) {
-    if (KeyUpArrow(key) || KeyDownArrow(key) || KeyLeftArrow(key) || KeyRightArrow(key)) {
+    if (key == OF_KEY_UP || key == OF_KEY_DOWN || key == OF_KEY_LEFT || key == OF_KEY_RIGHT) {
         return true;
     } else {
         return false;

@@ -18,12 +18,15 @@ void ofApp :: setup() {
     shaderTexName = "tex0";
     shader.load(shaderName + ".frag", shaderName + ".vert");
     
-    plane.set(width, height);   ///dimensions for width and height in pixels
-    plane.setPosition(width/2, height/2, 0); /// position in x y z
-    plane.setResolution(2, 2); /// this resolution (as columns and rows) is enough
+    plane.set(width, height);   // dimensions for width and height in pixels
+    plane.setPosition(width/2, height/2, 0); // position in x y z
+    plane.setResolution(2, 2); // this resolution (as columns and rows) is enough
     saveKeystoneVertsOrig();
     keystoneStep = 10;
     keystoneIndex = 0;
+    keystoneHandleColor = ofColor(255,0,0);
+    keystoneHandleSize = 50;
+    keystoneHandleStroke = 10;
     
     modeSelector = EDIT;
     
@@ -31,7 +34,7 @@ void ofApp :: setup() {
     playCounter = 0;
     swapCounter = -1;
     
-	//old oF default is 96 - but this results in fonts looking larger than in other programs.
+	// old oF default is 96 - but this results in fonts looking larger than in other programs.
 	ofTrueTypeFont :: setGlobalDpi(72);
 
     editFontSize = 30;
@@ -110,12 +113,22 @@ void ofApp :: draw() {
     plane.draw();
     fbo.getTextureReference().unbind();
     
+    if (modeSelector == KEYSTONE) {
+        ofVec2f center = ofVec2f(plane.getMesh().getVertex(keystoneIndex).x + plane.getPosition().x, plane.getMesh().getVertex(keystoneIndex).y + plane.getPosition().y);
+        ofPath circle;
+        circle.setFillColor(ofColor(255,0,0));
+        circle.arc(center, keystoneHandleSize + (keystoneHandleStroke/2), keystoneHandleSize + (keystoneHandleStroke/2), 0, 360);
+        circle.close();
+        circle.arc(center, keystoneHandleSize - (keystoneHandleStroke/2), keystoneHandleSize - (keystoneHandleStroke/2), 0, 360);
+        circle.draw();
+        
+        //ofEllipse(plane.getMesh().getVertex(keystoneIndex).x + plane.getPosition().x, plane.getMesh().getVertex(keystoneIndex).y + plane.getPosition().y, 50, 50);
+    }
 }
-
 
 //--------------------------------------------------------------
 void ofApp :: keyPressed(int key) {
-    if (ofm.KeyTab(key)) {
+    if (key == OF_KEY_TAB) {
         if (modeSelector == EDIT) {
             modeSelector = PLAY;
         } else if (modeSelector == PLAY) {
@@ -172,9 +185,9 @@ void ofApp :: keyPressed(int key) {
                 swapCounter = -1;
                 modeSelector = EDIT;
             }
-        } else if (ofm.KeyUpArrow(key) && editCounter > 0) {
+        } else if (key == OF_KEY_UP && editCounter > 0) {
             editCounter--;
-        } else if (ofm.KeyDownArrow(key) || ofm.KeyReturn(key)) {
+        } else if (key == OF_KEY_DOWN || ofm.KeyReturn(key)) {
             //editCounter++;
             if (editStr[editCounter].length() > 0) {
                 if (editCounter == editStr.size()-1) {
@@ -186,7 +199,7 @@ void ofApp :: keyPressed(int key) {
             } else if (editCounter < editStr.size()-1) {
                 editCounter++;
             }
-        } else if (!ofm.KeyUpArrow(key) && !ofm.KeyDownArrow(key) && !ofm.KeyLeftArrow(key) && !ofm.KeyRightArrow(key)) {
+        } else if (!ofm.KeyIsArrow(key)) {
             if (key == '0' || key == '1' || key == '2' || key == '3' || key == '4' || key == '5') {
                 modeSelector = KEYSTONE;
             } else {            
@@ -203,7 +216,7 @@ void ofApp :: keyPressed(int key) {
         if (key == ' ') {
             playCounter++;
             if (playCounter > editStr.size()-1 || (editStr[playCounter].length() < 1 && playCounter == editStr.size()-1)) playCounter = 0;
-        } else if (key == 'z' || key == 'Z' || ofm.KeyDelete(key)) {
+        } else if (key == 'z' || key == 'Z') {
             playCounter--;
             if (playCounter < 0) playCounter = editStr.size()-1;
          }
@@ -215,9 +228,9 @@ void ofApp :: keyPressed(int key) {
         } else if (key == '2') {
             keystoneIndex = 1;
         } else if (key == '3') {
-            keystoneIndex = 2;
-        } else if (key == '4') {
             keystoneIndex = 3;
+        } else if (key == '4') {
+            keystoneIndex = 2;
         } else if (key == '5') {
             loadKeystoneVertsOrig();
         } else if (ofm.KeyIsArrow(key)){
@@ -225,7 +238,7 @@ void ofApp :: keyPressed(int key) {
         } else {
             modeSelector = EDIT;
         }
-    }
+     }
 }
 
 //--------------------------------------------------------------
@@ -279,13 +292,13 @@ void ofApp :: centerPlayText() {
 void ofApp :: keystoneVertex(int index, int key) {
     ofVec3f v = plane.getMesh().getVertex(index);
     
-    if (ofm.KeyUpArrow(key)) {
+    if (key == OF_KEY_UP) {
         v.y -= keystoneStep;
-    } else if (ofm.KeyDownArrow(key)) {
+    } else if (key == OF_KEY_DOWN) {
         v.y += keystoneStep;
-    } else if (ofm.KeyLeftArrow(key)) {
+    } else if (key == OF_KEY_LEFT) {
         v.x -= keystoneStep;
-    } else if (ofm.KeyRightArrow(key)) {
+    } else if (key == OF_KEY_RIGHT) {
         v.x += keystoneStep;
     }
     

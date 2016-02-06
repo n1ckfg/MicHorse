@@ -68,6 +68,7 @@ class ofApp : public ofBaseApp {
         ofShader shader;
         string shaderName;
         string shaderTexName;
+    
         ofPlanePrimitive plane;
         int keystoneIndex;
         float keystoneStep;
@@ -75,6 +76,9 @@ class ofApp : public ofBaseApp {
         vector<ofVec3f> keystoneVertsOrig;
         void saveKeystoneVertsOrig();
         void loadKeystoneVertsOrig();
-    
+        int keystoneHandleSize;
+        int keystoneHandleStroke;
+        ofColor keystoneHandleColor;
+
 };
 
