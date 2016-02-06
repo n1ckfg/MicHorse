@@ -138,7 +138,7 @@ void ofApp :: keyPressed(int key) {
                 modeSelector = EDIT;
                 if (editCounter <0) editCounter = 0;
             }
-        } else if (key == KeyControl()) {
+        } else if (key == '/') {//KeyControl()) {
             if (modeSelector == EDIT) {
                 swapCounter = editCounter;
                 modeSelector = SWAP;
@@ -326,7 +326,7 @@ int ofApp :: KeyReturn() {
     if (keyboardType == OSX) {
         return OF_KEY_RETURN;
     } else if (keyboardType == RPI) {
-        return OF_KEY_RETURN;
+        return 36;
     }
 }
 
