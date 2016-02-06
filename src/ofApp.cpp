@@ -158,7 +158,8 @@ void ofApp :: keyPressed(int key) {
             }
         } else if (key == KeyUpArrow() && editCounter > 0) {
             editCounter--;
-        } else if (key == KeyDownArrow() || key == KeyReturn()) {// && editCounter < editStr.size()-1) {
+        } else if (key == KeyDownArrow() || key == -4 || key == 3 || key == 13 || key == 36 || key == 76) {//key == KeyReturn()) {
+            std::cout << key;
             //editCounter++;
             if (editStr[editCounter].length() > 0) {
                 if (editCounter == editStr.size()-1) {
