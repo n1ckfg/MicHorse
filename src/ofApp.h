@@ -74,8 +74,6 @@ class ofApp : public ofBaseApp {
         int KeyRightArrow();
         int KeyReturn();
         int KeyEnter();
-
-
     
 };
 

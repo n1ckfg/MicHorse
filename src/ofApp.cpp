@@ -15,7 +15,7 @@ void ofApp :: setup() {
     checkerboard.loadImage("checkerboard.png");
     
     modeSelector = EDIT;
-    keyboardType = OSX;
+    keyboardType = RPI;
     
     editCounter = 0;
     playCounter = 0;
@@ -286,7 +286,7 @@ int ofApp :: KeyControl() {
     if (keyboardType == OSX) {
         return OF_KEY_CONTROL;
     } else if (keyboardType == RPI) {
-        return 17;
+        return 4096;
     }
 }
 
@@ -302,7 +302,7 @@ int ofApp :: KeyDownArrow() {
     if (keyboardType == OSX) {
         return OF_KEY_DOWN;
     } else if (keyboardType == RPI) {
-        return 31;
+        return 125;
     }
 }
 
@@ -326,13 +326,13 @@ int ofApp :: KeyReturn() {
     if (keyboardType == OSX) {
         return OF_KEY_RETURN;
     } else if (keyboardType == RPI) {
-        return 13;
+        return 3; //13;
     }
 }
 
 int ofApp :: KeyEnter() {
     if (keyboardType == OSX) {
-        return 3;
+        return OF_KEY_RETURN;
     } else if (keyboardType == RPI) {
         return 3;
     }
