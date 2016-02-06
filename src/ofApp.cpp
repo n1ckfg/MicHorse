@@ -9,13 +9,23 @@ Fix yellow last line
 
 //--------------------------------------------------------------
 void ofApp :: setup() {
-    width = ofGetWidth();
-    height = ofGetHeight();
+    ofm.setup(width, height);
     
-    checkerboard.loadImage("checkerboard.png");
+    checkerboard.loadImage("textures/checkerboard.png");
+    
+    fbo.allocate(width, height, GL_RGBA);
+    shaderName = "shaders/LED_GLES";
+    shaderTexName = "tex0";
+    shader.load(shaderName + ".frag", shaderName + ".vert");
+    
+    plane.set(width, height);   ///dimensions for width and height in pixels
+    plane.setPosition(width/2, height/2, 0); /// position in x y z
+    plane.setResolution(2, 2); /// this resolution (as columns and rows) is enough
+    saveKeystoneVertsOrig();
+    keystoneStep = 10;
+    keystoneIndex = 0;
     
     modeSelector = EDIT;
-    keyboardType = OSX;
     
     editCounter = 0;
     playCounter = 0;
@@ -27,7 +37,7 @@ void ofApp :: setup() {
     editFontSize = 30;
     editLineHeight = 34.0f;
     editLetterSpacing = 1.035;
-	editFont.loadFont("verdana.ttf", editFontSize, true, true);
+	editFont.loadFont("fonts/verdana.ttf", editFontSize, true, true);
 	editFont.setLineHeight(editLineHeight);
 	editFont.setLetterSpacing(editLetterSpacing);
     editLeftMargin = 90;
@@ -42,7 +52,7 @@ void ofApp :: setup() {
     playFontSize = 60;
     playLineHeight = 68.0f;
     playLetterSpacing = 1.035;
-    playFont.loadFont("verdana.ttf", playFontSize, true, true);
+    playFont.loadFont("fonts/verdana.ttf", playFontSize, true, true);
     playFont.setLineHeight(playLineHeight);
     playFont.setLetterSpacing(playLetterSpacing);
     playLeftMargin = 100;
@@ -51,8 +61,6 @@ void ofApp :: setup() {
     playFontColor = ofColor(255,225,225);
     playBgColor = ofColor(0,127,0);
 
-    ofHideCursor();
-    
     editStr.push_back("");
     playStr.push_back("");
 }
@@ -64,42 +72,50 @@ void ofApp :: update() {
 
 //--------------------------------------------------------------
 void ofApp :: draw() {
-    ofClear(255,255,255, 0);
+    ofBackground(0);
     
-    if (modeSelector == EDIT || modeSelector == SWAP) {
-        ofBackground(editBgColor);
-        for (int i=0; i<editStr.size(); i++) {
-            if (i == editCounter || i == swapCounter) {
-                if (i == editCounter && (modeSelector != SWAP || i != swapCounter)) {
-                    ofSetColor(editFontHighlightColor);
-                } else if (modeSelector == SWAP && i == swapCounter && swapCounter != -1) {
-                    ofSetColor(swapFontHighlightColor);
-                }
-            } else {
-                if (i == playCounter) {
-                    ofSetColor(playFontHighlightColor);
+    fbo.begin();
+        ofClear(255,255,255, 0);
+        
+        if (modeSelector == EDIT || modeSelector == SWAP) {
+            ofBackground(editBgColor);
+            for (int i=0; i<editStr.size(); i++) {
+                if (i == editCounter || i == swapCounter) {
+                    if (i == editCounter && (modeSelector != SWAP || i != swapCounter)) {
+                        ofSetColor(editFontHighlightColor);
+                    } else if (modeSelector == SWAP && i == swapCounter && swapCounter != -1) {
+                        ofSetColor(swapFontHighlightColor);
+                    }
                 } else {
-                    ofSetColor(editFontColor);
+                    if (i == playCounter) {
+                        ofSetColor(playFontHighlightColor);
+                    } else {
+                        ofSetColor(editFontColor);
+                    }
                 }
+                editFont.drawString(ofToString(i+1) + ". " + editStr[i], editLeftMargin, editTopMargin + (i * editLineHeight));
             }
-            editFont.drawString(ofToString(i+1) + ". " + editStr[i], editLeftMargin, editTopMargin + (i * editLineHeight));
+        } else if (modeSelector == PLAY) {
+            ofBackground(playBgColor);
+            ofSetColor(playFontColor);
+            playFont.drawString(playStr[0], playLeftMargin, playTopMargin);
+        } else if (modeSelector == KEYSTONE) {
+            ofSetColor(255);
+            checkerboard.draw(0,0,width,height);
         }
-    } else if (modeSelector == PLAY) {
-        ofBackground(playBgColor);
-        ofSetColor(playFontColor);
-        playFont.drawString(playStr[0], playLeftMargin, playTopMargin);
-    } else if (modeSelector == KEYSTONE) {
-        ofSetColor(255);
-        checkerboard.draw(0,0,width,height);
-    }
+        ofSetColor(255); // why does this work?
+    fbo.end();
+    
+    fbo.getTextureReference().bind();
+    plane.draw();
+    fbo.getTextureReference().unbind();
     
 }
 
 
 //--------------------------------------------------------------
 void ofApp :: keyPressed(int key) {
-
-    if (key == KeyTab()) {
+    if (ofm.KeyTab(key)) {
         if (modeSelector == EDIT) {
             modeSelector = PLAY;
         } else if (modeSelector == PLAY) {
@@ -111,7 +127,7 @@ void ofApp :: keyPressed(int key) {
     }
     
     if (modeSelector == EDIT || modeSelector == SWAP) {
-        if (key == KeyDelete() || key == KeyBackspace()) {
+        if (ofm.KeyDelete(key)) {
             if (modeSelector == EDIT) {
                 if (editStr[editCounter].length() > 0) {
                     editStr[editCounter] = editStr[editCounter].substr(0, editStr[editCounter].length()-1);
@@ -156,9 +172,9 @@ void ofApp :: keyPressed(int key) {
                 swapCounter = -1;
                 modeSelector = EDIT;
             }
-        } else if (key == KeyUpArrow() && editCounter > 0) {
+        } else if (ofm.KeyUpArrow(key) && editCounter > 0) {
             editCounter--;
-        } else if (key == KeyDownArrow() || key == KeyReturn()) {
+        } else if (ofm.KeyDownArrow(key) || ofm.KeyReturn(key)) {
             //editCounter++;
             if (editStr[editCounter].length() > 0) {
                 if (editCounter == editStr.size()-1) {
@@ -170,8 +186,7 @@ void ofApp :: keyPressed(int key) {
             } else if (editCounter < editStr.size()-1) {
                 editCounter++;
             }
-        } else if (key != KeyUpArrow() && key != KeyDownArrow() && key != KeyLeftArrow() && key != KeyRightArrow()) {
-            //if (key == '0' || key == '1' || key == '2' || key == '3' || key == '4' || key == '5' || key == '6' || key == '7' || key == '8' || key == '9') {
+        } else if (!ofm.KeyUpArrow(key) && !ofm.KeyDownArrow(key) && !ofm.KeyLeftArrow(key) && !ofm.KeyRightArrow(key)) {
             if (key == '0' || key == '1' || key == '2' || key == '3' || key == '4' || key == '5') {
                 modeSelector = KEYSTONE;
             } else {            
@@ -188,7 +203,7 @@ void ofApp :: keyPressed(int key) {
         if (key == ' ') {
             playCounter++;
             if (playCounter > editStr.size()-1 || (editStr[playCounter].length() < 1 && playCounter == editStr.size()-1)) playCounter = 0;
-        } else if (key == 'z' || key == 'Z' || key == KeyBackspace() || key == KeyDelete()) {
+        } else if (key == 'z' || key == 'Z' || ofm.KeyDelete(key)) {
             playCounter--;
             if (playCounter < 0) playCounter = editStr.size()-1;
          }
@@ -196,15 +211,17 @@ void ofApp :: keyPressed(int key) {
         
     } else if (modeSelector == KEYSTONE) {
         if (key == '1') {
-         
+            keystoneIndex = 0;
         } else if (key == '2') {
-        
+            keystoneIndex = 1;
         } else if (key == '3') {
-        
+            keystoneIndex = 2;
         } else if (key == '4') {
-
+            keystoneIndex = 3;
         } else if (key == '5') {
-        
+            loadKeystoneVertsOrig();
+        } else if (ofm.KeyIsArrow(key)){
+            keystoneVertex(keystoneIndex, key);
         } else {
             modeSelector = EDIT;
         }
@@ -257,85 +274,37 @@ void ofApp :: centerPlayText() {
         playLeftMargin = (width/2) - ((playStr[playCounter].length() * playFontSize)/2);
     }
 }
+
 //--------------------------------------------------------------
-int ofApp :: KeyTab() {
-    if (keyboardType == OSX) {
-        return OF_KEY_TAB;
-    } else if (keyboardType == RPI) {
-        return 15;
+void ofApp :: keystoneVertex(int index, int key) {
+    ofVec3f v = plane.getMesh().getVertex(index);
+    
+    if (ofm.KeyUpArrow(key)) {
+        v.y -= keystoneStep;
+    } else if (ofm.KeyDownArrow(key)) {
+        v.y += keystoneStep;
+    } else if (ofm.KeyLeftArrow(key)) {
+        v.x -= keystoneStep;
+    } else if (ofm.KeyRightArrow(key)) {
+        v.x += keystoneStep;
+    }
+    
+    plane.getMesh().setVertex(index, v);
+}
+
+
+void ofApp :: saveKeystoneVertsOrig() {
+    for (int i=0; i<plane.getMesh().getVertices().size(); i++) {
+        ofVec3f v = plane.getMesh().getVertex(i);
+        keystoneVertsOrig.push_back(v);
     }
 }
 
-int ofApp :: KeyDelete() {
-    if (keyboardType == OSX) {
-        return OF_KEY_DEL;
-    } else if (keyboardType == RPI) {
-        return 111;
+void ofApp :: loadKeystoneVertsOrig() {
+    for (int i=0; i<keystoneVertsOrig.size(); i++) {
+        plane.getMesh().setVertex(i, keystoneVertsOrig[i]);
     }
 }
 
-int ofApp :: KeyBackspace() {
-    if (keyboardType == OSX) {
-        return OF_KEY_BACKSPACE;
-    } else if (keyboardType == RPI) {
-        return 14;
-    }
-}
-
-int ofApp :: KeyControl() {
-    if (keyboardType == OSX) {
-        return OF_KEY_CONTROL;
-    } else if (keyboardType == RPI) {
-        return 29; //r ctrl 97
-    }
-}
-
-int ofApp :: KeyUpArrow() {
-    if (keyboardType == OSX) {
-        return OF_KEY_UP;
-    } else if (keyboardType == RPI) {
-        return 103;
-    }
-}
-
-int ofApp :: KeyDownArrow() {
-    if (keyboardType == OSX) {
-        return OF_KEY_DOWN;
-    } else if (keyboardType == RPI) {
-        return 108;
-    }
-}
-
-int ofApp :: KeyLeftArrow() {
-    if (keyboardType == OSX) {
-        return OF_KEY_LEFT;
-    } else if (keyboardType == RPI) {
-        return 105;
-    }
-}
-
-int ofApp :: KeyRightArrow() {
-    if (keyboardType == OSX) {
-        return OF_KEY_RIGHT;
-    } else if (keyboardType == RPI) {
-        return 106;
-    }
-}
-
-int ofApp :: KeyReturn() {
-    if (keyboardType == OSX) {
-        return OF_KEY_RETURN;
-    } else if (keyboardType == RPI) {
-        return 28;
-    }
-}
-
-int ofApp :: KeyEnter() {
-    if (keyboardType == OSX) {
-        return OF_KEY_RETURN;
-    } else if (keyboardType == RPI) {
-        return 96;
-    }
-}
-
+//--------------------------------------------------------------
 

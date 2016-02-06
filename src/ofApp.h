@@ -1,10 +1,15 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofManager.h"
 
 class ofApp : public ofBaseApp {
 	
 	public:
+        int width;
+        int height;
+        ofManager ofm;
+    
 		void setup();
 		void update();
 		void draw();
@@ -57,23 +62,19 @@ class ofApp : public ofBaseApp {
         int playCounter;
     
         // ~ ~ ~ ~ ~ ~ ~
-        int width;
-        int height;
-    
+  
         ofImage checkerboard;
-    
-        enum KeyboardType { OSX, RPI };
-        KeyboardType keyboardType;
-        int KeyTab();
-        int KeyDelete();
-        int KeyBackspace();
-        int KeyControl();
-        int KeyUpArrow();
-        int KeyDownArrow();
-        int KeyLeftArrow();
-        int KeyRightArrow();
-        int KeyReturn();
-        int KeyEnter();
+        ofFbo fbo;
+        ofShader shader;
+        string shaderName;
+        string shaderTexName;
+        ofPlanePrimitive plane;
+        int keystoneIndex;
+        float keystoneStep;
+        void keystoneVertex(int index, int key);
+        vector<ofVec3f> keystoneVertsOrig;
+        void saveKeystoneVertsOrig();
+        void loadKeystoneVertsOrig();
     
 };
 
