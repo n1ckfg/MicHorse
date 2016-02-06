@@ -48,7 +48,11 @@ class ofApp : public ofBaseApp {
         int swapCounter;
 
         // ~ ~ ~ play ~ ~ ~
-        ofTrueTypeFont playFont;
+        vector<ofTrueTypeFont> playFonts;
+        vector<ofImage> playImages;
+        int playFontSelector;
+        int playImageSelector;
+    
         int playFontSize;
         float playLetterSpacing;
         float playLineHeight;

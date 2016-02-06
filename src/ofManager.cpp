@@ -10,6 +10,7 @@ void ofManager :: setup(int& width, int& height) {
     //ofEnableNormalizedTexCoords();
     //ofEnableLighting();
     //ofEnableAntiAliasing();
+    //ofEnableAlphaBlending();
     
     ofHideCursor();
     

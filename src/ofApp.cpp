@@ -55,10 +55,27 @@ void ofApp :: setup() {
     playFontSize = 60;
     playLineHeight = 68.0f;
     playLetterSpacing = 1.035;
-    playFont.loadFont("fonts/verdana.ttf", playFontSize, true, true);
-    playFont.setLineHeight(playLineHeight);
-    playFont.setLetterSpacing(playLetterSpacing);
-    playLeftMargin = 100;
+    playFontSelector = 0;
+    
+    ofTrueTypeFont font;
+    font.loadFont("fonts/vcr_osd_mono.ttf", playFontSize, true, true);
+    playFonts.push_back(font);
+
+    font.loadFont("fonts/arcade.ttf", playFontSize, true, true);
+    playFonts.push_back(font);
+
+    font.loadFont("fonts/arcade_classic.ttf", playFontSize, true, true);
+    playFonts.push_back(font);
+
+    font.loadFont("fonts/stitch_warrior.ttf", playFontSize, true, true);
+    playFonts.push_back(font);
+    
+    for (int i=0; i<playFonts.size(); i++) {
+        playFonts[i].setLineHeight(playLineHeight);
+        playFonts[i].setLetterSpacing(playLetterSpacing);
+    }
+    
+    playLeftMargin = 90;
     playTopMargin = (height/2) + (playFontSize/2);
     
     playFontColor = ofColor(255,225,225);
@@ -66,6 +83,13 @@ void ofApp :: setup() {
 
     editStr.push_back("");
     playStr.push_back("");
+    
+    playImageSelector = 0;
+    ofImage image;
+    image.loadImage("textures/aliens.jpg");
+    playImages.push_back(image);
+    image.loadImage("textures/starfox.png");
+    playImages.push_back(image);
 }
 
 //--------------------------------------------------------------
@@ -99,9 +123,15 @@ void ofApp :: draw() {
                 editFont.drawString(ofToString(i+1) + ". " + editStr[i], editLeftMargin, editTopMargin + (i * editLineHeight));
             }
         } else if (modeSelector == PLAY) {
-            ofBackground(playBgColor);
+            if (playImages.size() > 0) {
+                playImages[playImageSelector].draw(0,0,width,height);
+                ofSetColor(0,127);
+                ofRect(0,0,width,height);
+            } else {
+                ofBackground(playBgColor);
+            }
             ofSetColor(playFontColor);
-            playFont.drawString(playStr[0], playLeftMargin, playTopMargin);
+            playFonts[playFontSelector].drawString(playStr[0], playLeftMargin, playTopMargin);
         } else if (modeSelector == KEYSTONE) {
             ofSetColor(255);
             checkerboard.draw(0,0,width,height);
@@ -219,7 +249,14 @@ void ofApp :: keyPressed(int key) {
         } else if (key == 'z' || key == 'Z') {
             playCounter--;
             if (playCounter < 0) playCounter = editStr.size()-1;
-         }
+        } else if (key == 'f' || key == 'F') {
+            playFontSelector ++;
+            if (playFontSelector > playFonts.size()-1) playFontSelector = 0;
+        } else if (key == 'b' || key == 'B') {
+            playImageSelector ++;
+            if (playImageSelector > playImages.size()-1) playImageSelector = 0;
+        }
+        
         if (editStr[playCounter].length() > 0) playStr[0] = editStr[playCounter];//ofSplitString(editStr[editCounter], "-");
         
     } else if (modeSelector == KEYSTONE) {
