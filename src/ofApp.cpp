@@ -15,7 +15,7 @@ void ofApp :: setup() {
     checkerboard.loadImage("checkerboard.png");
     
     modeSelector = EDIT;
-    keyboardType = RPI;
+    keyboardType = OSX;
     
     editCounter = 0;
     playCounter = 0;
@@ -138,7 +138,7 @@ void ofApp :: keyPressed(int key) {
                 modeSelector = EDIT;
                 if (editCounter <0) editCounter = 0;
             }
-        } else if (key == KeyControl()) {
+        } else if (key == '/') { //KeyControl()) {
             if (modeSelector == EDIT) {
                 swapCounter = editCounter;
                 modeSelector = SWAP;
