@@ -15,7 +15,7 @@ void ofApp :: setup() {
     checkerboard.loadImage("checkerboard.png");
     
     modeSelector = EDIT;
-    keyboardType = RPI;
+    keyboardType = OSX;
     
     editCounter = 0;
     playCounter = 0;
