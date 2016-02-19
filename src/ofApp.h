@@ -79,9 +79,14 @@ class ofApp : public ofBaseApp {
   
         ofImage checkerboard;
         ofFbo fbo;
-        //ofShader shader;
+        ofShader shader;
         string shaderName;
         string shaderTexName;
+        float shaderContrast;
+        float shaderBrightness;
+        float shaderBlendMix;
+        int shaderBlendMode;
+        bool doShader;
     
         ofPlanePrimitive plane;
         int keystoneIndex;

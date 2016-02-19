@@ -4,7 +4,7 @@ void ofManager :: setup(int& width, int& height) {
     ofSetLogLevel(OF_LOG_VERBOSE);
     
     ofSetVerticalSync(true);
-    ofDisableArbTex();
+    //ofDisableArbTex();
     //ofEnableDepthTest();
     //ofEnableSmoothing();
     //ofEnableNormalizedTexCoords();

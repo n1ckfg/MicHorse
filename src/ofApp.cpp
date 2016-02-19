@@ -1,26 +1,29 @@
 #include "ofApp.h"
 
-/*
-TODO:
-Scrolling
-Swapping entries
-Fix yellow last line
-*/
-
 //--------------------------------------------------------------
 void ofApp :: setup() {
     ofm.setup(width, height);
     
     checkerboard.loadImage("textures/checkerboard.png");
     
-    fbo.allocate(width, height, GL_RGBA);
-    shaderName = "shaders/LED_GLES";
-    shaderTexName = "tex0";
-    //shader.load(shaderName + ".frag", shaderName + ".vert");
+    shaderName = "myShader";
+    shader.load("shaders/" + shaderName);
+
+    // parameters for the shader
+    shaderContrast = 0.8;//0.8;
+    shaderBrightness = 0.4;
+    shaderBlendMix = 0.5;
+    // 10 blend modes
+    shaderBlendMode = 0;
+    doShader = false;
     
+    fbo.allocate(width, height, GL_RGBA);
+
     plane.set(width, height);   // dimensions for width and height in pixels
     plane.setPosition(width/2, height/2, 0); // position in x y z
     plane.setResolution(2, 2); // this resolution (as columns and rows) is enough
+    plane.mapTexCoordsFromTexture(fbo.getTextureReference()); // *** don't forget this ***
+    
     saveKeystoneVertsOrig();
     keystoneStep = 10;
     keystoneIndex = 0;
@@ -165,10 +168,30 @@ void ofApp :: draw() {
         }
         ofSetColor(255); // why does this work?
     fbo.end();
-    
-    fbo.getTextureReference().bind();
-    plane.draw();
-    fbo.getTextureReference().unbind();
+
+    ofTexture tex = fbo.getTextureReference();
+
+    if (doShader) {
+        shader.begin();
+            shader.setUniform1f( "contrast", shaderContrast );
+            shader.setUniform1f( "brightness", shaderBrightness );
+            shader.setUniform1f( "blendmix", shaderBlendMix );
+            shader.setUniform1i( "blendmode", shaderBlendMode );
+            
+            shader.setUniformTexture("texBase", tex, 0 );
+            shader.setUniformTexture("texBlend",  tex, 1 );
+            
+            tex.bind();
+            plane.draw();
+            tex.unbind();
+        shader.end();
+
+        shaderContrast += 0.01;
+    } else {
+        tex.bind();
+        plane.draw();
+        tex.unbind();
+    }
     
     if (modeSelector == KEYSTONE) {
         ofVec2f center = ofVec2f(plane.getMesh().getVertex(keystoneIndex).x + plane.getPosition().x, plane.getMesh().getVertex(keystoneIndex).y + plane.getPosition().y);
@@ -281,6 +304,8 @@ void ofApp :: keyPressed(int key) {
         } else if (key == 'z' || key == 'Z') {
             playCounter--;
             if (playCounter < 0) playCounter = editStr.size()-1;
+        } else if (key == 's' || key == 'S') {
+            doShader = !doShader;
         } else if (key == 'f' || key == 'F') {
             playFontSelector ++;
             if (playFontSelector > playFonts.size()-1) playFontSelector = 0;
