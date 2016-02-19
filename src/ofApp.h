@@ -78,8 +78,8 @@ class ofApp : public ofBaseApp {
         // ~ ~ ~ ~ ~ ~ ~
   
         ofImage checkerboard;
-        ofFbo fbo;
-        ofShader shader;
+        ofFbo fbo1, fbo2;
+        ofShader shader1;
         string shaderName;
         string shaderTexName;
         float shaderContrast;
@@ -88,7 +88,7 @@ class ofApp : public ofBaseApp {
         int shaderBlendMode;
         bool doShader;
     
-        ofPlanePrimitive plane;
+        ofPlanePrimitive plane1;
         int keystoneIndex;
         float keystoneStep;
         void keystoneVertex(int index, int key);

@@ -1,15 +1,15 @@
 #include "ofMain.h"
 #include "ofApp.h"
 
-#ifdef TARGET_RASPBERRY_PI
-    #include "ofGLProgrammableRenderer.h"
-#endif
+//#ifdef TARGET_OPENGLES
+    //#include "ofGLProgrammableRenderer.h"
+//#endif
 
 int main() {
     
     ofSetLogLevel(OF_LOG_VERBOSE);
     
-    #ifdef TARGET_RASPBERRY_PI
+    #ifdef TARGET_OPENGLES
         ofSetCurrentRenderer(ofGLProgrammableRenderer::TYPE);
     #endif
     

@@ -7,7 +7,7 @@ void ofApp :: setup() {
     checkerboard.loadImage("textures/checkerboard.png");
     
     shaderName = "myShader";
-    shader.load("shaders/" + shaderName);
+    shader1.load("shaders/" + shaderName);
 
     // parameters for the shader
     shaderContrast = 0.8;//0.8;
@@ -17,12 +17,13 @@ void ofApp :: setup() {
     shaderBlendMode = 0;
     doShader = false;
     
-    fbo.allocate(width, height, GL_RGBA);
+    fbo1.allocate(width, height, GL_RGBA);
+    fbo2.allocate(width, height, GL_RGBA);
 
-    plane.set(width, height);   // dimensions for width and height in pixels
-    plane.setPosition(width/2, height/2, 0); // position in x y z
-    plane.setResolution(2, 2); // this resolution (as columns and rows) is enough
-    plane.mapTexCoordsFromTexture(fbo.getTextureReference()); // *** don't forget this ***
+    plane1.set(width, height);   // dimensions for width and height in pixels
+    plane1.setPosition(width/2, height/2, 0); // position in x y z
+    plane1.setResolution(2, 2); // this resolution (as columns and rows) is enough
+    plane1.mapTexCoordsFromTexture(fbo1.getTextureReference()); // *** don't forget this ***
     
     saveKeystoneVertsOrig();
     keystoneStep = 10;
@@ -114,14 +115,7 @@ void ofApp :: setup() {
 
 //--------------------------------------------------------------
 void ofApp :: update() {
-    //centerPlayText();
-}
-
-//--------------------------------------------------------------
-void ofApp :: draw() {
-    ofBackground(0);
-    
-    fbo.begin();
+    fbo1.begin();
         ofClear(255,255,255, 0);
     
         if (modeSelector == INTRO) {
@@ -167,43 +161,51 @@ void ofApp :: draw() {
             checkerboard.draw(0,0,width,height);
         }
         ofSetColor(255); // why does this work?
-    fbo.end();
+    fbo1.end();
 
-    ofTexture tex = fbo.getTextureReference();
+    ofTexture tex1 = fbo1.getTextureReference();
 
-    if (doShader) {
-        shader.begin();
-            shader.setUniform1f( "contrast", shaderContrast );
-            shader.setUniform1f( "brightness", shaderBrightness );
-            shader.setUniform1f( "blendmix", shaderBlendMix );
-            shader.setUniform1i( "blendmode", shaderBlendMode );
-            
-            shader.setUniformTexture("texBase", tex, 0 );
-            shader.setUniformTexture("texBlend",  tex, 1 );
-            
-            tex.bind();
-            plane.draw();
-            tex.unbind();
-        shader.end();
+    fbo2.begin();
+        ofClear(255,255,255, 0);
 
-        shaderContrast += 0.01;
-    } else {
-        tex.bind();
-        plane.draw();
-        tex.unbind();
-    }
+        if (doShader) {
+            shader1.begin();
+                shader1.setUniform1f( "contrast", shaderContrast );
+                shader1.setUniform1f( "brightness", shaderBrightness );
+                shader1.setUniform1f( "blendmix", shaderBlendMix );
+                shader1.setUniform1i( "blendmode", shaderBlendMode );
+                
+                shader1.setUniformTexture("texBase", tex1, 0 );
+                shader1.setUniformTexture("texBlend",  tex1, 1 );
+                
+                tex1.bind();
+                plane1.draw();
+                tex1.unbind();
+            shader1.end();
+
+            shaderContrast += 0.01;
+        } else {
+            tex1.bind();
+            plane1.draw();
+            tex1.unbind();
+        }
     
-    if (modeSelector == KEYSTONE) {
-        ofVec2f center = ofVec2f(plane.getMesh().getVertex(keystoneIndex).x + plane.getPosition().x, plane.getMesh().getVertex(keystoneIndex).y + plane.getPosition().y);
-        ofPath circle;
-        circle.setFillColor(ofColor(255,0,0));
-        circle.arc(center, keystoneHandleSize + (keystoneHandleStroke/2), keystoneHandleSize + (keystoneHandleStroke/2), 0, 360);
-        circle.close();
-        circle.arc(center, keystoneHandleSize - (keystoneHandleStroke/2), keystoneHandleSize - (keystoneHandleStroke/2), 0, 360);
-        circle.draw();
-        
-        //ofEllipse(plane.getMesh().getVertex(keystoneIndex).x + plane.getPosition().x, plane.getMesh().getVertex(keystoneIndex).y + plane.getPosition().y, 50, 50);
-    }
+        if (modeSelector == KEYSTONE) {
+            ofVec2f center = ofVec2f(plane1.getMesh().getVertex(keystoneIndex).x + plane1.getPosition().x, plane1.getMesh().getVertex(keystoneIndex).y + plane1.getPosition().y);
+            ofPath circle;
+            circle.setFillColor(ofColor(255,0,0));
+            circle.arc(center, keystoneHandleSize + (keystoneHandleStroke/2), keystoneHandleSize + (keystoneHandleStroke/2), 0, 360);
+            circle.close();
+            circle.arc(center, keystoneHandleSize - (keystoneHandleStroke/2), keystoneHandleSize - (keystoneHandleStroke/2), 0, 360);
+            circle.draw();
+        }
+    fbo2.end();
+}
+
+//--------------------------------------------------------------
+void ofApp :: draw() {
+    ofBackground(0);
+    fbo2.draw(0,0);
 }
 
 //--------------------------------------------------------------
@@ -393,7 +395,7 @@ void ofApp :: centerPlayText() {
 
 //--------------------------------------------------------------
 void ofApp :: keystoneVertex(int index, int key) {
-    ofVec3f v = plane.getMesh().getVertex(index);
+    ofVec3f v = plane1.getMesh().getVertex(index);
     
     if (key == OF_KEY_UP) {
         v.y -= keystoneStep;
@@ -405,13 +407,13 @@ void ofApp :: keystoneVertex(int index, int key) {
         v.x += keystoneStep;
     }
     
-    plane.getMesh().setVertex(index, v);
+    plane1.getMesh().setVertex(index, v);
 }
 
 
 void ofApp :: saveKeystoneVertsOrig() {
-    for (int i=0; i<plane.getMesh().getVertices().size(); i++) {
-        ofVec3f v = plane.getMesh().getVertex(i);
+    for (int i=0; i<plane1.getMesh().getVertices().size(); i++) {
+        ofVec3f v = plane1.getMesh().getVertex(i);
         keystoneVertsOrig.push_back(v);
     }
 }
@@ -419,7 +421,7 @@ void ofApp :: saveKeystoneVertsOrig() {
 //--------------------------------------------------------------
 void ofApp :: loadKeystoneVertsOrig() {
     for (int i=0; i<keystoneVertsOrig.size(); i++) {
-        plane.getMesh().setVertex(i, keystoneVertsOrig[i]);
+        plane1.getMesh().setVertex(i, keystoneVertsOrig[i]);
     }
 }
 
