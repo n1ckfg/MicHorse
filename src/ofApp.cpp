@@ -6,15 +6,20 @@ void ofApp :: setup() {
     
     checkerboard.loadImage("textures/checkerboard.png");
     
-    shaderName = "myShader";
-    shader1.load("shaders/" + shaderName);
+    shaderName = "shaderExample";
+    
+    //#ifdef TARGET_OPENGLES
+        //shader1.load("shaders/" + shaderName + "GLES");
+    //#else
+        shader1.load(shaderName);
+    //#endif
 
     // parameters for the shader
-    shaderContrast = 0.8;//0.8;
-    shaderBrightness = 0.4;
-    shaderBlendMix = 0.5;
+    //shaderContrast = 0.8;//0.8;
+    //shaderBrightness = 0.4;
+    //shaderBlendMix = 0.5;
     // 10 blend modes
-    shaderBlendMode = 0;
+    //shaderBlendMode = 0;
     doShader = false;
     
     fbo1.allocate(width, height, GL_RGBA);
@@ -163,31 +168,26 @@ void ofApp :: update() {
         ofSetColor(255); // why does this work?
     fbo1.end();
 
-    ofTexture tex1 = fbo1.getTextureReference();
+    //ofTexture tex1 = fbo1.getTextureReference();
 
     fbo2.begin();
         ofClear(255,255,255, 0);
 
         if (doShader) {
             shader1.begin();
-                shader1.setUniform1f( "contrast", shaderContrast );
-                shader1.setUniform1f( "brightness", shaderBrightness );
-                shader1.setUniform1f( "blendmix", shaderBlendMix );
-                shader1.setUniform1i( "blendmode", shaderBlendMode );
-                
-                shader1.setUniformTexture("texBase", tex1, 0 );
-                shader1.setUniformTexture("texBlend",  tex1, 1 );
-                
-                tex1.bind();
+                shader1.setUniformTexture("tex0", fbo1.getTextureReference(), 0);
+                shader1.setUniform1f("time", ofGetElapsedTimef());
+                shader1.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
+                fbo1.getTextureReference().bind();
                 plane1.draw();
-                tex1.unbind();
+                fbo1.getTextureReference().unbind();
             shader1.end();
 
-            shaderContrast += 0.01;
+            //shaderContrast += 0.01;
         } else {
-            tex1.bind();
+            fbo1.getTextureReference().bind();
             plane1.draw();
-            tex1.unbind();
+            fbo1.getTextureReference().unbind();
         }
     
         if (modeSelector == KEYSTONE) {

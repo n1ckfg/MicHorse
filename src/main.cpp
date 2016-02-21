@@ -1,14 +1,12 @@
 #include "ofMain.h"
 #include "ofApp.h"
-
-//#ifdef TARGET_OPENGLES
-    //#include "ofGLProgrammableRenderer.h"
-//#endif
+#include "ofGLProgrammableRenderer.h"
 
 int main() {
     
     ofSetLogLevel(OF_LOG_VERBOSE);
-    
+    ofSetLogLevel("ofThread", OF_LOG_ERROR);
+
     #ifdef TARGET_OPENGLES
         ofSetCurrentRenderer(ofGLProgrammableRenderer::TYPE);
     #endif
