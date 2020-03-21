@@ -14,7 +14,7 @@ void ofManager :: setup(int& width, int& height) {
     
     ofHideCursor();
     
-    keyboardType = KeyboardType.OSX;
+    keyboardType = OSX;
     
     width = ofGetWidth();
     height = ofGetHeight();
