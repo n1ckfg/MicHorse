@@ -172,7 +172,7 @@ void ofApp :: update() {
 
     fbo2.begin();
         ofClear(255,255,255, 0);
-
+        ofRotate(180, 1, 0, 0);
         if (doShader) {
             shader1.begin();
                 shader1.setUniformTexture("tex0", fbo1.getTextureReference(), 0);
@@ -185,7 +185,6 @@ void ofApp :: update() {
 
             //shaderContrast += 0.01;
         } else {
-            ofRotate(180);
             fbo1.getTextureReference().bind();
             plane1.draw();
             fbo1.getTextureReference().unbind();
