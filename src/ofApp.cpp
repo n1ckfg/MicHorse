@@ -28,7 +28,7 @@ void ofApp :: setup() {
     plane1.set(width, height);   // dimensions for width and height in pixels
     plane1.setPosition(width/2, height/2, 0); // position in x y z
     plane1.setResolution(2, 2); // this resolution (as columns and rows) is enough
-    plane1.mapTexCoordsFromTexture(ofGetWidth(), ofGetHeight(), 1, 1);//fbo1.getTextureReference()); // *** don't forget this ***
+    plane1.mapTexCoords(ofGetWidth(), ofGetHeight(), 1, 1);//fbo1.getTextureReference()); // *** don't forget this ***
     
     saveKeystoneVertsOrig();
     keystoneStep = 10;
