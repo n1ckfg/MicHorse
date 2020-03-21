@@ -170,15 +170,14 @@ void ofApp :: update() {
 
     //ofTexture tex1 = fbo1.getTextureReference();
 
-    fbo1.getTextureReference().bind();
-    plane1.draw();
-    fbo1.getTextureReference().unbind();
 }
 
 //--------------------------------------------------------------
 void ofApp :: draw() {
     ofBackground(0);
-    fbo2.draw(0,0);
+    fbo1.getTextureReference().bind();
+    plane1.draw();
+    fbo1.getTextureReference().unbind();
 }
 
 //--------------------------------------------------------------
