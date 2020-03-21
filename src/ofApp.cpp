@@ -172,10 +172,12 @@ void ofApp::update() {
 //--------------------------------------------------------------
 void ofApp::draw() {
     ofBackground(0);
-    ofRotate(180,1,0,0);
-    ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
     fbo1.getTextureReference().bind();
+
+    ofTranslate(width, height);
+    ofScale(1, -1, 1);
     plane1.draw();
+
     fbo1.getTextureReference().unbind();
 }
 
