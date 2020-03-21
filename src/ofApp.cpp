@@ -1,11 +1,9 @@
 #include "ofApp.h"
 
 //--------------------------------------------------------------
-void ofApp :: setup() {   
+void ofApp::setup() {   
     checkerboard.loadImage("textures/checkerboard.png");
-    
-    shaderName = "shaderExample";
-    
+       
     ofSetLogLevel(OF_LOG_VERBOSE);
     
     ofSetVerticalSync(true);
@@ -23,7 +21,6 @@ void ofApp :: setup() {
     height = ofGetHeight();
 
     fbo1.allocate(width, height, GL_RGBA);
-    fbo2.allocate(width, height, GL_RGBA);
 
     plane1.set(width, height);   // dimensions for width and height in pixels
     plane1.setPosition(width/2, height/2, 0); // position in x y z
@@ -44,7 +41,7 @@ void ofApp :: setup() {
     swapCounter = -1;
     
 	// old oF default is 96 - but this results in fonts looking larger than in other programs.
-	ofTrueTypeFont :: setGlobalDpi(72);
+	ofTrueTypeFont::setGlobalDpi(72);
 
     editFontSize = 30;
     editLineHeight = 34.0f;
@@ -119,7 +116,7 @@ void ofApp :: setup() {
 }
 
 //--------------------------------------------------------------
-void ofApp :: update() {
+void ofApp::update() {
     fbo1.begin();
         ofClear(255,255,255, 0);
 
@@ -173,7 +170,7 @@ void ofApp :: update() {
 }
 
 //--------------------------------------------------------------
-void ofApp :: draw() {
+void ofApp::draw() {
     ofBackground(0);
     ofRotate(180,1,0,0);
     ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
@@ -183,7 +180,7 @@ void ofApp :: draw() {
 }
 
 //--------------------------------------------------------------
-void ofApp :: keyPressed(int key) {
+void ofApp::keyPressed(int key) {
     if (modeSelector == EDIT || modeSelector == PLAY) {
         if (key == OF_KEY_TAB) {
             if (modeSelector == EDIT) {
@@ -280,8 +277,6 @@ void ofApp :: keyPressed(int key) {
         } else if (key == 'z' || key == 'Z') {
             playCounter--;
             if (playCounter < 0) playCounter = editStr.size()-1;
-        } else if (key == 's' || key == 'S') {
-            doShader = !doShader;
         } else if (key == 'f' || key == 'F') {
             playFontSelector ++;
             if (playFontSelector > playFonts.size()-1) playFontSelector = 0;
@@ -321,14 +316,14 @@ void ofApp :: keyPressed(int key) {
 }
 
 //--------------------------------------------------------------
-void ofApp :: centerPlayText() {
+void ofApp::centerPlayText() {
     if (playStr.size() > 0 && playCounter <= playStr.size()-1) {
         playLeftMargin = (width/2) - ((playStr[playCounter].length() * playFontSize)/2);
     }
 }
 
 //--------------------------------------------------------------
-void ofApp :: keystoneVertex(int index, int key) {
+void ofApp::keystoneVertex(int index, int key) {
     ofVec3f v = plane1.getMesh().getVertex(index);
     
     if (key == OF_KEY_UP) {
@@ -345,7 +340,7 @@ void ofApp :: keystoneVertex(int index, int key) {
 }
 
 
-void ofApp :: saveKeystoneVertsOrig() {
+void ofApp::saveKeystoneVertsOrig() {
     for (int i=0; i<plane1.getMesh().getVertices().size(); i++) {
         ofVec3f v = plane1.getMesh().getVertex(i);
         keystoneVertsOrig.push_back(v);
@@ -353,13 +348,13 @@ void ofApp :: saveKeystoneVertsOrig() {
 }
 
 //--------------------------------------------------------------
-void ofApp :: loadKeystoneVertsOrig() {
+void ofApp::loadKeystoneVertsOrig() {
     for (int i=0; i<keystoneVertsOrig.size(); i++) {
         plane1.getMesh().setVertex(i, keystoneVertsOrig[i]);
     }
 }
 
-void ofApp :: initFonts() {
+void ofApp::initFonts() {
     playFonts.clear();
     for (int i=0; i<playFontsList.size(); i++) {
         ofTrueTypeFont font;
@@ -370,7 +365,7 @@ void ofApp :: initFonts() {
     }
 }
 
-void ofApp :: initImages() {
+void ofApp::initImages() {
     for (int i=0; i<playImagesList.size(); i++) {
         ofImage image;
         image.loadImage(playImagesList[i]);
@@ -378,7 +373,7 @@ void ofApp :: initImages() {
     }
 }
 
-bool ofApp :: keyIsArrow(int key) {
+bool ofApp::keyIsArrow(int key) {
     if (key == OF_KEY_UP || key == OF_KEY_DOWN || key == OF_KEY_LEFT || key == OF_KEY_RIGHT) {
         return true;
     } else {
@@ -386,7 +381,7 @@ bool ofApp :: keyIsArrow(int key) {
     }
 }
 
-bool ofApp :: keyIsNumber(int key) {
+bool ofApp::keyIsNumber(int key) {
     if (key == '0' || key == '1' || key == '2' || key == '3' || key == '4' || key == '5' || key == '6' || key == '7' || key == '8' || key == '9') {
         return true;
     } else {
