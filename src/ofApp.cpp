@@ -170,36 +170,9 @@ void ofApp :: update() {
 
     //ofTexture tex1 = fbo1.getTextureReference();
 
-    fbo2.begin();
-        ofClear(255,255,255, 0);
-        ofRotate(180, 1, 0, 0);
-        if (doShader) {
-            shader1.begin();
-                shader1.setUniformTexture("tex0", fbo1.getTextureReference(), 0);
-                shader1.setUniform1f("time", ofGetElapsedTimef());
-                shader1.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
-                fbo1.getTextureReference().bind();
-                plane1.draw();
-                fbo1.getTextureReference().unbind();
-            shader1.end();
-
-            //shaderContrast += 0.01;
-        } else {
-            fbo1.getTextureReference().bind();
-            plane1.draw();
-            fbo1.getTextureReference().unbind();
-        }
-    
-        if (modeSelector == KEYSTONE) {
-            ofVec2f center = ofVec2f(plane1.getMesh().getVertex(keystoneIndex).x + plane1.getPosition().x, plane1.getMesh().getVertex(keystoneIndex).y + plane1.getPosition().y);
-            ofPath circle;
-            circle.setFillColor(ofColor(255,0,0));
-            circle.arc(center, keystoneHandleSize + (keystoneHandleStroke/2), keystoneHandleSize + (keystoneHandleStroke/2), 0, 360);
-            circle.close();
-            circle.arc(center, keystoneHandleSize - (keystoneHandleStroke/2), keystoneHandleSize - (keystoneHandleStroke/2), 0, 360);
-            circle.draw();
-        }
-    fbo2.end();
+    fbo1.getTextureReference().bind();
+    plane1.draw();
+    fbo1.getTextureReference().unbind();
 }
 
 //--------------------------------------------------------------
