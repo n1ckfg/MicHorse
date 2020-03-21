@@ -1,27 +1,27 @@
 #include "ofApp.h"
 
 //--------------------------------------------------------------
-void ofApp :: setup() {
-    ofm.setup(width, height);
-    
+void ofApp :: setup() {   
     checkerboard.loadImage("textures/checkerboard.png");
     
     shaderName = "shaderExample";
     
-    //#ifdef TARGET_OPENGLES
-        //shader1.load("shaders/" + shaderName + "GLES");
-    //#else
-        shader1.load(shaderName);
-    //#endif
-
-    // parameters for the shader
-    //shaderContrast = 0.8;//0.8;
-    //shaderBrightness = 0.4;
-    //shaderBlendMix = 0.5;
-    // 10 blend modes
-    //shaderBlendMode = 0;
-    doShader = false;
+    ofSetLogLevel(OF_LOG_VERBOSE);
     
+    ofSetVerticalSync(true);
+    //ofDisableArbTex();
+    //ofEnableDepthTest();
+    //ofEnableSmoothing();
+    //ofEnableNormalizedTexCoords();
+    //ofEnableLighting();
+    //ofEnableAntiAliasing();
+    //ofEnableAlphaBlending();
+    
+    ofHideCursor();
+           
+    width = ofGetWidth();
+    height = ofGetHeight();
+
     fbo1.allocate(width, height, GL_RGBA);
     fbo2.allocate(width, height, GL_RGBA);
 
@@ -122,7 +122,7 @@ void ofApp :: setup() {
 void ofApp :: update() {
     fbo1.begin();
         ofClear(255,255,255, 0);
-    
+
         if (modeSelector == INTRO) {
             ofBackground(introBgColor);
             ofSetColor(editFontColor);
@@ -175,6 +175,8 @@ void ofApp :: update() {
 //--------------------------------------------------------------
 void ofApp :: draw() {
     ofBackground(0);
+    ofRotate(180,1,0,0);
+    ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
     fbo1.getTextureReference().bind();
     plane1.draw();
     fbo1.getTextureReference().unbind();
@@ -319,46 +321,6 @@ void ofApp :: keyPressed(int key) {
 }
 
 //--------------------------------------------------------------
-void ofApp :: keyReleased(int key) { 
-	
-}
-
-//--------------------------------------------------------------
-void ofApp :: mouseMoved(int x, int y ) {
-	
-}
-
-//--------------------------------------------------------------
-void ofApp :: mouseDragged(int x, int y, int button) {
-	
-}
-
-//--------------------------------------------------------------
-void ofApp :: mousePressed(int x, int y, int button) {
-	
-}
-
-//--------------------------------------------------------------
-void ofApp :: mouseReleased(int x, int y, int button) {
-
-}
-
-//--------------------------------------------------------------
-void ofApp :: windowResized(int w, int h) {
-
-}
-
-//--------------------------------------------------------------
-void ofApp :: gotMessage(ofMessage msg) {
-
-}
-
-//--------------------------------------------------------------
-void ofApp :: dragEvent(ofDragInfo dragInfo) { 
-
-}
-
-//--------------------------------------------------------------
 void ofApp :: centerPlayText() {
     if (playStr.size() > 0 && playCounter <= playStr.size()-1) {
         playLeftMargin = (width/2) - ((playStr[playCounter].length() * playFontSize)/2);
@@ -413,6 +375,22 @@ void ofApp :: initImages() {
         ofImage image;
         image.loadImage(playImagesList[i]);
         playImages.push_back(image);
+    }
+}
+
+bool ofManager :: KeyIsArrow(int key) {
+    if (key == OF_KEY_UP || key == OF_KEY_DOWN || key == OF_KEY_LEFT || key == OF_KEY_RIGHT) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool ofManager :: KeyIsNumber(int key) {
+    if (key == '0' || key == '1' || key == '2' || key == '3' || key == '4' || key == '5' || key == '6' || key == '7' || key == '8' || key == '9') {
+        return true;
+    } else {
+        return false;
     }
 }
 
