@@ -67,15 +67,7 @@ class ofApp : public ofBaseApp {
         // ~ ~ ~ ~ ~ ~ ~
   
         ofImage checkerboard;
-        ofFbo fbo1, fbo2;
-        ofShader shader1;
-        string shaderName;
-        string shaderTexName;
-        float shaderContrast;
-        float shaderBrightness;
-        float shaderBlendMix;
-        int shaderBlendMode;
-        bool doShader;
+        ofFbo fbo1;
     
         ofPlanePrimitive plane1;
         int keystoneIndex;
@@ -88,11 +80,8 @@ class ofApp : public ofBaseApp {
         int keystoneHandleStroke;
         ofColor keystoneHandleColor;
 
-        enum KeyboardType { OSX, RPI };
-        KeyboardType keyboardType;            
-    
-        bool KeyIsArrow(int key);
-        bool KeyIsNumber(int key);
+        bool keyIsArrow(int key);
+        bool keyIsNumber(int key);
 
 };
 

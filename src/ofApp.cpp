@@ -260,7 +260,7 @@ void ofApp :: keyPressed(int key) {
             } else if (editCounter < editStr.size()-1) {
                 editCounter++;
             }
-        } else if (!ofm.KeyIsArrow(key)) {
+        } else if (!keyIsArrow(key)) {
             if (key == '0' || key == '1' || key == '2' || key == '3' || key == '4' || key == '5') {
                 modeSelector = KEYSTONE;
             } else {            
@@ -312,7 +312,7 @@ void ofApp :: keyPressed(int key) {
             keystoneIndex = 2;
         } else if (key == '5') {
             loadKeystoneVertsOrig();
-        } else if (ofm.KeyIsArrow(key)){
+        } else if (keyIsArrow(key)){
             keystoneVertex(keystoneIndex, key);
         } else {
             modeSelector = EDIT;
