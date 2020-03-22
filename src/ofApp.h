@@ -3,15 +3,24 @@
 #include "ofMain.h"
 
 class ofApp : public ofBaseApp {
-	
-	public:
+    
+    public:
         int width;
         int height;
     
-    	void setup();
-    	void update();
-    	void draw();       	
-    	void keyPressed(int key);
+        void setup();
+        void update();
+        void draw();
+        
+        void keyPressed(int key);
+        void keyReleased(int key);
+        void mouseMoved(int x, int y );
+        void mouseDragged(int x, int y, int button);
+        void mousePressed(int x, int y, int button);
+        void mouseReleased(int x, int y, int button);
+        void windowResized(int w, int h);
+        void dragEvent(ofDragInfo dragInfo);
+        void gotMessage(ofMessage msg);
 
         vector<string> editStr;
         vector<string> playStr;
@@ -19,9 +28,9 @@ class ofApp : public ofBaseApp {
     
         enum ModeSelector { EDIT, PLAY, SWAP, KEYSTONE, INTRO };
         ModeSelector modeSelector;
-        
+    
         // ~ ~ ~ edit / swap ~ ~ ~
-    	ofTrueTypeFont editFont;
+        ofTrueTypeFont editFont;
         int editFontSize;
         float editLetterSpacing;
         float editLineHeight;
@@ -67,7 +76,15 @@ class ofApp : public ofBaseApp {
         // ~ ~ ~ ~ ~ ~ ~
   
         ofImage checkerboard;
-        ofFbo fbo1;
+        ofFbo fbo1, fbo2;
+        ofShader shader1;
+        string shaderName;
+        string shaderTexName;
+        float shaderContrast;
+        float shaderBrightness;
+        float shaderBlendMix;
+        int shaderBlendMode;
+        bool doShader;
     
         ofPlanePrimitive plane1;
         int keystoneIndex;

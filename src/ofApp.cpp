@@ -1,26 +1,30 @@
 #include "ofApp.h"
 
 //--------------------------------------------------------------
-void ofApp::setup() {   
-    checkerboard.loadImage("textures/checkerboard.png");
-       
-    ofSetLogLevel(OF_LOG_VERBOSE);
-    
-    ofSetVerticalSync(true);
-    //ofDisableArbTex();
-    //ofEnableDepthTest();
-    //ofEnableSmoothing();
-    //ofEnableNormalizedTexCoords();
-    //ofEnableLighting();
-    //ofEnableAntiAliasing();
-    //ofEnableAlphaBlending();
-    
-    ofHideCursor();
-           
+void ofApp::setup() {
     width = ofGetWidth();
     height = ofGetHeight();
+    
+    checkerboard.loadImage("textures/checkerboard.png");
+    
+    shaderName = "shaderExample";
+    
+    //#ifdef TARGET_OPENGLES
+        //shader1.load("shaders/" + shaderName + "GLES");
+    //#else
+        shader1.load(shaderName);
+    //#endif
 
+    // parameters for the shader
+    //shaderContrast = 0.8;//0.8;
+    //shaderBrightness = 0.4;
+    //shaderBlendMix = 0.5;
+    // 10 blend modes
+    //shaderBlendMode = 0;
+    doShader = false;
+    
     fbo1.allocate(width, height, GL_RGBA);
+    fbo2.allocate(width, height, GL_RGBA);
 
     plane1.set(width, height);   // dimensions for width and height in pixels
     plane1.setPosition(width/2, height/2, 0); // position in x y z
@@ -40,15 +44,15 @@ void ofApp::setup() {
     playCounter = 0;
     swapCounter = -1;
     
-	// old oF default is 96 - but this results in fonts looking larger than in other programs.
-	ofTrueTypeFont::setGlobalDpi(72);
+    // old oF default is 96 - but this results in fonts looking larger than in other programs.
+    ofTrueTypeFont::setGlobalDpi(72);
 
     editFontSize = 30;
     editLineHeight = 34.0f;
     editLetterSpacing = 1.035;
-	editFont.loadFont("fonts/verdana.ttf", editFontSize, true, true);
-	editFont.setLineHeight(editLineHeight);
-	editFont.setLetterSpacing(editLetterSpacing);
+    editFont.loadFont("fonts/verdana.ttf", editFontSize, true, true);
+    editFont.setLineHeight(editLineHeight);
+    editFont.setLetterSpacing(editLetterSpacing);
     editLeftMargin = 90;
     editTopMargin = 180;
     
@@ -119,7 +123,7 @@ void ofApp::setup() {
 void ofApp::update() {
     fbo1.begin();
         ofClear(255,255,255, 0);
-
+    
         if (modeSelector == INTRO) {
             ofBackground(introBgColor);
             ofSetColor(editFontColor);
@@ -167,18 +171,42 @@ void ofApp::update() {
 
     //ofTexture tex1 = fbo1.getTextureReference();
 
+    fbo2.begin();
+        ofClear(255,255,255, 0);
+
+        if (doShader) {
+            shader1.begin();
+                shader1.setUniformTexture("tex0", fbo1.getTextureReference(), 0);
+                shader1.setUniform1f("time", ofGetElapsedTimef());
+                shader1.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
+                fbo1.getTextureReference().bind();
+                plane1.draw();
+                fbo1.getTextureReference().unbind();
+            shader1.end();
+
+            //shaderContrast += 0.01;
+        } else {
+            fbo1.getTextureReference().bind();
+            plane1.draw();
+            fbo1.getTextureReference().unbind();
+        }
+    
+        if (modeSelector == KEYSTONE) {
+            ofVec2f center = ofVec2f(plane1.getMesh().getVertex(keystoneIndex).x + plane1.getPosition().x, plane1.getMesh().getVertex(keystoneIndex).y + plane1.getPosition().y);
+            ofPath circle;
+            circle.setFillColor(ofColor(255,0,0));
+            circle.arc(center, keystoneHandleSize + (keystoneHandleStroke/2), keystoneHandleSize + (keystoneHandleStroke/2), 0, 360);
+            circle.close();
+            circle.arc(center, keystoneHandleSize - (keystoneHandleStroke/2), keystoneHandleSize - (keystoneHandleStroke/2), 0, 360);
+            circle.draw();
+        }
+    fbo2.end();
 }
 
 //--------------------------------------------------------------
 void ofApp::draw() {
     ofBackground(0);
-    fbo1.getTextureReference().bind();
-
-    ofTranslate(width, height);
-    ofScale(1, -1, 1);
-    plane1.draw();
-
-    fbo1.getTextureReference().unbind();
+    fbo2.draw(0,0);
 }
 
 //--------------------------------------------------------------
@@ -262,7 +290,7 @@ void ofApp::keyPressed(int key) {
         } else if (!keyIsArrow(key)) {
             if (key == '0' || key == '1' || key == '2' || key == '3' || key == '4' || key == '5') {
                 modeSelector = KEYSTONE;
-            } else {            
+            } else {
                 if (editCounter < 0) {
                     editCounter = 0;
                 } else if (editCounter > editStr.size()-1) {
@@ -279,6 +307,8 @@ void ofApp::keyPressed(int key) {
         } else if (key == 'z' || key == 'Z') {
             playCounter--;
             if (playCounter < 0) playCounter = editStr.size()-1;
+        } else if (key == 's' || key == 'S') {
+            doShader = !doShader;
         } else if (key == 'f' || key == 'F') {
             playFontSelector ++;
             if (playFontSelector > playFonts.size()-1) playFontSelector = 0;
@@ -315,6 +345,46 @@ void ofApp::keyPressed(int key) {
             modeSelector = EDIT;
         }
      }
+}
+
+//--------------------------------------------------------------
+void ofApp::keyReleased(int key) {
+    
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseMoved(int x, int y ) {
+    
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseDragged(int x, int y, int button) {
+    
+}
+
+//--------------------------------------------------------------
+void ofApp::mousePressed(int x, int y, int button) {
+    
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseReleased(int x, int y, int button) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::windowResized(int w, int h) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::gotMessage(ofMessage msg) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::dragEvent(ofDragInfo dragInfo) {
+
 }
 
 //--------------------------------------------------------------
@@ -375,6 +445,8 @@ void ofApp::initImages() {
     }
 }
 
+//--------------------------------------------------------------
+
 bool ofApp::keyIsArrow(int key) {
     if (key == OF_KEY_UP || key == OF_KEY_DOWN || key == OF_KEY_LEFT || key == OF_KEY_RIGHT) {
         return true;
@@ -390,6 +462,3 @@ bool ofApp::keyIsNumber(int key) {
         return false;
     }
 }
-
-//--------------------------------------------------------------
-
