@@ -10,7 +10,9 @@ int main() {
 	settings.windowMode = OF_FULLSCREEN;
 	ofCreateWindow(settings);
 #else
-    ofSetupOpenGL(1280, 720, OF_FULLSCREEN);
+    ofGLWindowSettings settings;
+    settings.windowMode = OF_FULLSCREEN;
+    ofCreateWindow(settings);
 #endif
     
 	// this kicks off the running of my app

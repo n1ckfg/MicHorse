@@ -5,7 +5,7 @@ void ofApp::setup() {
     width = ofGetWidth();
     height = ofGetHeight();
     
-    checkerboard.loadImage("textures/checkerboard.png");
+    checkerboard.load("textures/checkerboard.png");
     
     shaderName = "shaderExample";
     
@@ -28,12 +28,13 @@ void ofApp::setup() {
 
     plane1.set(width, height);   // dimensions for width and height in pixels
     plane1.setPosition(width/2, height/2, 0); // position in x y z
+    plane1.setOrientation(glm::vec3(180,0,0));
     plane1.setResolution(2, 2); // this resolution (as columns and rows) is enough
-    plane1.mapTexCoordsFromTexture(fbo1.getTextureReference()); // *** don't forget this ***
+    plane1.mapTexCoordsFromTexture(fbo1.getTexture()); // *** don't forget this ***
     
     saveKeystoneVertsOrig();
     keystoneStep = 10;
-    keystoneIndex = 0;
+    keystoneIndex = 2; // upper left
     keystoneHandleColor = ofColor(255,0,0);
     keystoneHandleSize = 50;
     keystoneHandleStroke = 10;
@@ -50,7 +51,7 @@ void ofApp::setup() {
     editFontSize = 30;
     editLineHeight = 34.0f;
     editLetterSpacing = 1.035;
-    editFont.loadFont("fonts/verdana.ttf", editFontSize, true, true);
+    editFont.load("fonts/verdana.ttf", editFontSize, true, true);
     editFont.setLineHeight(editLineHeight);
     editFont.setLetterSpacing(editLetterSpacing);
     editLeftMargin = 90;
@@ -122,84 +123,83 @@ void ofApp::setup() {
 //--------------------------------------------------------------
 void ofApp::update() {
     fbo1.begin();
-        ofClear(255,255,255, 0);
+    ofClear(255,255,255, 0);
     
-        if (modeSelector == INTRO) {
-            ofBackground(introBgColor);
-            ofSetColor(editFontColor);
+    if (modeSelector == INTRO) {
+        ofBackground(introBgColor);
+        ofSetColor(editFontColor);
 
-            for (int i=0; i<introStr.size(); i++) {
-                editFont.drawString(introStr[i], editLeftMargin, editTopMargin + (i * editLineHeight));
-            }
-            
-        } else if (modeSelector == EDIT || modeSelector == SWAP) {
-            ofBackground(editBgColor);
-            for (int i=0; i<editStr.size(); i++) {
-                if (i == editCounter || i == swapCounter) {
-                    if (i == editCounter && (modeSelector != SWAP || i != swapCounter)) {
-                        ofSetColor(editFontHighlightColor);
-                    } else if (modeSelector == SWAP && i == swapCounter && swapCounter != -1) {
-                        ofSetColor(swapFontHighlightColor);
-                    }
-                } else {
-                    if (i == playCounter) {
-                        ofSetColor(playFontHighlightColor);
-                    } else {
-                        ofSetColor(editFontColor);
-                    }
-                }
-                editFont.drawString(ofToString(i+1) + ". " + editStr[i], editLeftMargin, editTopMargin + (i * editLineHeight));
-            }
-            
-        } else if (modeSelector == PLAY) {
-            if (playImages.size() > 0) {
-                playImages[playImageSelector].draw(0,0,width,height);
-                ofSetColor(0,127);
-                ofRect(0,0,width,height);
-            } else {
-                ofBackground(playBgColor);
-            }
-            ofSetColor(playFontColor);
-            playFonts[playFontSelector].drawString(playStr[0], playLeftMargin, playTopMargin);
-            
-        } else if (modeSelector == KEYSTONE) {
-            ofSetColor(255);
-            checkerboard.draw(0,0,width,height);
+        for (int i=0; i<introStr.size(); i++) {
+            editFont.drawString(introStr[i], editLeftMargin, editTopMargin + (i * editLineHeight));
         }
-        ofSetColor(255); // why does this work?
+    } else if (modeSelector == EDIT || modeSelector == SWAP) {
+        ofBackground(editBgColor);
+        for (int i=0; i<editStr.size(); i++) {
+            if (i == editCounter || i == swapCounter) {
+                if (i == editCounter && (modeSelector != SWAP || i != swapCounter)) {
+                    ofSetColor(editFontHighlightColor);
+                } else if (modeSelector == SWAP && i == swapCounter && swapCounter != -1) {
+                    ofSetColor(swapFontHighlightColor);
+                }
+            } else {
+                if (i == playCounter) {
+                    ofSetColor(playFontHighlightColor);
+                } else {
+                    ofSetColor(editFontColor);
+                }
+            }
+            editFont.drawString(ofToString(i+1) + ". " + editStr[i], editLeftMargin, editTopMargin + (i * editLineHeight));
+        }
+        
+    } else if (modeSelector == PLAY) {
+        if (playImages.size() > 0) {
+            playImages[playImageSelector].draw(0,0,width,height);
+            ofSetColor(0,127);
+            ofRectangle(0,0,width,height);
+        } else {
+            ofBackground(playBgColor);
+        }
+        ofSetColor(playFontColor);
+        playFonts[playFontSelector].drawString(playStr[0], playLeftMargin, playTopMargin);
+        
+    } else if (modeSelector == KEYSTONE) {
+        ofSetColor(255);
+        checkerboard.draw(0,0,width,height);
+    }
+    ofSetColor(255); // why does this work?
     fbo1.end();
 
-    //ofTexture tex1 = fbo1.getTextureReference();
+    //ofTexture tex1 = fbo1.getTexture();
 
     fbo2.begin();
-        ofClear(255,255,255, 0);
+    ofClear(255,255,255, 0);
 
-        if (doShader) {
-            shader1.begin();
-                shader1.setUniformTexture("tex0", fbo1.getTextureReference(), 0);
-                shader1.setUniform1f("time", ofGetElapsedTimef());
-                shader1.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
-                fbo1.getTextureReference().bind();
-                plane1.draw();
-                fbo1.getTextureReference().unbind();
-            shader1.end();
+    if (doShader) {
+        shader1.begin();
+        shader1.setUniformTexture("tex0", fbo1.getTexture(), 0);
+        shader1.setUniform1f("time", ofGetElapsedTimef());
+        shader1.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
+        fbo1.getTexture().bind();
+        plane1.draw();
+        fbo1.getTexture().unbind();
+        shader1.end();
 
-            //shaderContrast += 0.01;
-        } else {
-            fbo1.getTextureReference().bind();
-            plane1.draw();
-            fbo1.getTextureReference().unbind();
-        }
-    
-        if (modeSelector == KEYSTONE) {
-            ofVec2f center = ofVec2f(plane1.getMesh().getVertex(keystoneIndex).x + plane1.getPosition().x, plane1.getMesh().getVertex(keystoneIndex).y + plane1.getPosition().y);
-            ofPath circle;
-            circle.setFillColor(ofColor(255,0,0));
-            circle.arc(center, keystoneHandleSize + (keystoneHandleStroke/2), keystoneHandleSize + (keystoneHandleStroke/2), 0, 360);
-            circle.close();
-            circle.arc(center, keystoneHandleSize - (keystoneHandleStroke/2), keystoneHandleSize - (keystoneHandleStroke/2), 0, 360);
-            circle.draw();
-        }
+        //shaderContrast += 0.01;
+    } else {
+        fbo1.getTexture().bind();
+        plane1.draw();
+        fbo1.getTexture().unbind();
+    }
+
+    if (modeSelector == KEYSTONE) {
+        ofVec2f center = ofVec2f(plane1.getMesh().getVertex(keystoneIndex).x + plane1.getPosition().x, fbo2.getHeight() - (plane1.getMesh().getVertex(keystoneIndex).y + plane1.getPosition().y));
+        ofPath circle;
+        circle.setFillColor(ofColor(255,0,0));
+        circle.arc(center, keystoneHandleSize + (keystoneHandleStroke/2), keystoneHandleSize + (keystoneHandleStroke/2), 0, 360);
+        circle.close();
+        circle.arc(center, keystoneHandleSize - (keystoneHandleStroke/2), keystoneHandleSize - (keystoneHandleStroke/2), 0, 360);
+        circle.draw();
+    }
     fbo2.end();
 }
 
@@ -296,7 +296,9 @@ void ofApp::keyPressed(int key) {
                 } else if (editCounter > editStr.size()-1) {
                     editCounter = editStr.size()-1;
                 }
-                editStr[editCounter].append(1, (char)key);
+                if (key != OF_KEY_LEFT_SHIFT && key != OF_KEY_RIGHT_SHIFT && key != OF_KEY_CONTROL && key != OF_KEY_ALT) { // filter unwanted keys here
+                    editStr[editCounter].append(1, (char)key);
+                }
             }
         }
         
@@ -330,13 +332,13 @@ void ofApp::keyPressed(int key) {
         
     } else if (modeSelector == KEYSTONE) {
         if (key == '1') {
-            keystoneIndex = 0;
-        } else if (key == '2') {
-            keystoneIndex = 1;
-        } else if (key == '3') {
-            keystoneIndex = 3;
-        } else if (key == '4') {
             keystoneIndex = 2;
+        } else if (key == '2') {
+            keystoneIndex = 3;
+        } else if (key == '3') {
+            keystoneIndex = 0;
+        } else if (key == '4') {
+            keystoneIndex = 1;
         } else if (key == '5') {
             loadKeystoneVertsOrig();
         } else if (keyIsArrow(key)){
@@ -399,9 +401,9 @@ void ofApp::keystoneVertex(int index, int key) {
     ofVec3f v = plane1.getMesh().getVertex(index);
     
     if (key == OF_KEY_UP) {
-        v.y -= keystoneStep;
-    } else if (key == OF_KEY_DOWN) {
         v.y += keystoneStep;
+    } else if (key == OF_KEY_DOWN) {
+        v.y -= keystoneStep;
     } else if (key == OF_KEY_LEFT) {
         v.x -= keystoneStep;
     } else if (key == OF_KEY_RIGHT) {
