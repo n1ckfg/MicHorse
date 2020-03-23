@@ -9,11 +9,11 @@ void ofApp::setup() {
     
     shaderName = "shaderExample";
     
-    //#ifdef TARGET_OPENGLES
-        //shader1.load("shaders/" + shaderName + "GLES");
-    //#else
-        shader1.load(shaderName);
-    //#endif
+    #ifdef TARGET_OPENGLES
+        shader1.load("shaders/es/" + shaderName);
+    #else
+        shader1.load("shaders/gl/" + shaderName);
+    #endif
 
     // parameters for the shader
     //shaderContrast = 0.8;//0.8;
